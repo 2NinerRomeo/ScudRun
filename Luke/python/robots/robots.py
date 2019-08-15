@@ -6,6 +6,7 @@
 import pygame;
 import random;
 import math;
+import sys;
 
 #Setting Constants
 BOX_TOP = 0;
@@ -298,6 +299,7 @@ def setup_level(level):
    global levels;
    global moblist;
    global thinglist;
+   global sys;
    keepPlaying = True;
    moblist = [];
    moblist = [Lockbot() for count in range(levels[level].lockbots)];
@@ -332,7 +334,7 @@ def play_level():
       #Handle Events (key press)
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
-            keepPlaying = False;
+            sys.exit();
             screenText = "GAME OVER:  Quitter";
          if event.type == pygame.JOYBUTTONDOWN:
             if not paused:
@@ -349,7 +351,7 @@ def play_level():
          if not hasattr(event, 'key'):
             continue;
          if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
-            keepPlaying = False;
+            sys.exit();
             screenText = "GAME OVER:  Quitter";
          if event.key == pygame.K_p:
             toggle_pause;
@@ -360,7 +362,7 @@ def play_level():
 #      axis2 = joystick.get_axis( 2 );
 #      axis3 = joystick.get_axis( 3 );
       if(joystick.get_button( 9 )):
-         keepPlaying = False;
+         sys.exit();
          screenText = "GAME OVER:  Quitter";
 
       #Game Logic
@@ -374,7 +376,7 @@ def play_level():
              #Check for collistion with Player
          if(moblist[i].collided(player,10)):
             player.broken = True;
-            keepPlaying = False;
+            sys.exit();
             loseSound.play();
             #pygame.mixer.Channel(2).play(pygame.mixer.Sound('sounds/loseSound'));
             print "you died";
@@ -389,7 +391,7 @@ def play_level():
          if moblist[i].broken == False:
             aliveBots = aliveBots + 1;
       if aliveBots == 0:
-          keepPlaying = False;
+          sys.exit();
           screenText = "You Win!"
       
       #Draw the screen
@@ -435,7 +437,7 @@ def quit_menu():
    while waiting_for_user:
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
-            keepPlaying = False;
+            sys.exit();
             screenText = "GAME OVER:  Quitter";
          if not hasattr(event, 'key'):
             continue;
