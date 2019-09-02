@@ -131,7 +131,7 @@ class Character(mob):
    def tp_player_safe(self): 
       self.pos_x = random.randint(BOX_LEFT,BOX_RIGHT); 
       self.pos_y = random.randint(BOX_TOP,BOX_BOTTOM);
-      print "teleporting..."
+      print("teleporting...")
       teleportSound.play();
       #pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/teleportSound'));
 
@@ -320,7 +320,7 @@ def toggle_pause():
       paused = True;
       puaseSound.play();
       screen_text = "PAUSED";
-   print "paused is toggled";
+   print ("paused is toggled");
 
 def play_level():
    global keepPlaying;
@@ -379,7 +379,7 @@ def play_level():
             sys.exit();
             loseSound.play();
             #pygame.mixer.Channel(2).play(pygame.mixer.Sound('sounds/loseSound'));
-            print "you died";
+            print ("you died");
             screenText = "You died   GAME OVER";
          #Check for collisions with other Bots
          for j in range(i+1,len(moblist)):
@@ -413,7 +413,7 @@ def play_level():
       botCountText = statusFont.render("Bots: "+str(aliveBots),1,(255,255,255));
       screen.blit(botCountText, [40,30]);
       pygame.display.flip();
-      print "AliveBots: " + str(aliveBots);
+      print("AliveBots: " + str(aliveBots));
    pygame.time.wait(1000);
    #render (str"game over", 1, (0,0,0));
 #   print "Game over"
@@ -470,7 +470,7 @@ while playing:
    while level < len(levels):      
       setup_level(level);
       if play_level() == True:
-         print "Level " + str(level) + " Complete"
+         print ("Level " + str(level) + (" Complete"));
          level = level +1;
       else:
          playing = quit_menu();
