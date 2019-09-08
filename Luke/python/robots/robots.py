@@ -304,9 +304,16 @@ def reset_game():
    keepPlaying = True;
    #level(lockbots,wildbots,creepbots,nursebots,medkits):
    levels = [];
+   levels += [Level(5,0,0,0,0)];
+   levels += [Level(0,5,0,0,0)];
+   levels += [Level(0,0,5,0,0)];
    levels += [Level(0,10,10,0,0)];
    levels += [Level(10,10,0,0,0)];
    levels += [Level(10,10,10,0,0)];
+
+   #test level
+   #levels += [Level(1,0,1,0,0)];
+
 
 def setup_level(level):
    global keepPlaying;
@@ -314,8 +321,10 @@ def setup_level(level):
    global moblist;
    global thinglist;
    global sys;
+   global player;
    keepPlaying = True;
    moblist = [];
+   player.broken = False;
    moblist = [Lockbot() for count in range(levels[level].lockbots)];
    moblist += [Wildbot() for count in range(levels[level].wildbots)];
    moblist += [Creepbot() for count in range(levels[level].creepbots)];
@@ -453,7 +462,7 @@ def quit_menu():
    while waiting_for_user:
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
-            screenText = "GAME OVER:  Quitter";
+            screenText = "GAME OVER:  Quitter"
             return False;
          if not hasattr(event, 'key'):
             continue;
@@ -488,6 +497,8 @@ while playing:
       if play_level() == True:
          print ("Level " + str(level) + (" Complete"));
          level = level +1;
+         if level == len(levels):
+            playing = False
       else:
          playing = quit_menu();
    #if we beat the level = next level
