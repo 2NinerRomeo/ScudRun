@@ -330,11 +330,12 @@ def toggle_pause():
       paused = False;
       unpuaseSound.play();
       screen_text = ""
+      print("unpausing");
    else:
       paused = True;
       puaseSound.play();
       screen_text = "PAUSED";
-   print ("paused is toggled");
+      print("pausing");
 
 def play_level():
    global keepPlaying;
@@ -367,8 +368,9 @@ def play_level():
          if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
             sys.exit();
             screenText = "GAME OVER:  Quitter";
-         if event.key == pygame.K_p:
-            toggle_pause;
+         if event.key == pygame.K_p and event.type == pygame.KEYDOWN:
+            toggle_pause();
+#         if event.key == pygame.K_
 
       #Read the Joystick
 #      axis0 = joystick.get_axis( 0 );
@@ -390,7 +392,7 @@ def play_level():
              #Check for collistion with Player
          if(moblist[i].collided(player,10)):
             player.broken = True;
-            sys.exit();
+            keepPlaying = False
             loseSound.play();
             #pygame.mixer.Channel(2).play(pygame.mixer.Sound('sounds/loseSound'));
             print ("you died");
@@ -405,7 +407,7 @@ def play_level():
          if moblist[i].broken == False:
             aliveBots = aliveBots + 1;
       if aliveBots == 0:
-          sys.exit();
+          keepPlaying = False
           screenText = "You Win!"
       
       #Draw the screen
@@ -451,8 +453,8 @@ def quit_menu():
    while waiting_for_user:
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
-            sys.exit();
             screenText = "GAME OVER:  Quitter";
+            return False;
          if not hasattr(event, 'key'):
             continue;
          if event.key == pygame.K_y:
@@ -481,7 +483,7 @@ playing = True;
 level = 0;
 while playing:
    reset_game();
-   while level < len(levels):      
+   while level < len(levels) and playing == True:      
       setup_level(level);
       if play_level() == True:
          print ("Level " + str(level) + (" Complete"));
