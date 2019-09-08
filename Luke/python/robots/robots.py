@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #screen.py
 #by Luke
 #with help from Dad
@@ -7,6 +7,19 @@ import pygame;
 import random;
 import math;
 import sys;
+
+from contextlib import contextmanager
+import os
+
+@contextmanager
+def suppress_stdout():
+   with open(os.devnull, "w") as devnull:
+      old_stdout = sys.stdout
+      sys.stdout = devnull
+      try:
+         yield
+      finally:
+         sys.stdout = old_stdout
 
 #Setting Constants
 BOX_TOP = 0;
@@ -110,8 +123,9 @@ class Character(mob):
          #self.broken == False;
          screen.blit(playerimg, [self.pos_x-5, self.pos_y-5]);
    def update(self):
-      axis0 = joystick.get_axis( 0 );
-      axis1 = joystick.get_axis( 1 );
+      with suppress_stdout():
+         axis0 = joystick.get_axis( 0 )
+         axis1 = joystick.get_axis( 1 )
       #interpret the joystick axes
       x_speed =float(axis0*MAX_CHARACTER_SPEED);
       y_speed =float(axis1*MAX_CHARACTER_SPEED);
@@ -413,7 +427,7 @@ def play_level():
       botCountText = statusFont.render("Bots: "+str(aliveBots),1,(255,255,255));
       screen.blit(botCountText, [40,30]);
       pygame.display.flip();
-      print("AliveBots: " + str(aliveBots));
+      #print("AliveBots: " + str(aliveBots));
    pygame.time.wait(1000);
    #render (str"game over", 1, (0,0,0));
 #   print "Game over"
