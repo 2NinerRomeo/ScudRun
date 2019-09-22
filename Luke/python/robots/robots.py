@@ -305,11 +305,11 @@ def reset_game():
    #level(lockbots,wildbots,creepbots,nursebots,medkits):
    levels = [];
    levels += [Level(5,0,0,0,0)];
-   levels += [Level(0,5,0,0,0)];
+   levels += [Level(2,5,0,0,0)];
    levels += [Level(0,0,5,0,0)];
-   levels += [Level(0,10,10,0,0)];
-   levels += [Level(10,10,0,0,0)];
-   levels += [Level(10,10,10,0,0)];
+   #levels += [Level(0,10,10,0,0)];
+   #levels += [Level(10,10,0,0,0)];
+   #levels += [Level(10,10,10,0,0)];
 
    #test level
    #levels += [Level(1,0,1,0,0)];
@@ -392,6 +392,7 @@ def play_level():
 
       #Game Logic
       aliveBots = 0;
+      wildBots = 0;
       if not paused:
          player.update();
          #move class robots and check for collisions
@@ -415,7 +416,15 @@ def play_level():
                #pygame.mixer.Channel(3).play(pygame.mixer.Sound('sounds/collisionSound'));
          if moblist[i].broken == False:
             aliveBots = aliveBots + 1;
+            if moblist[i].__class__ == Wildbot:
+               wildBots = wildBots + 1
+
       if aliveBots == 0:
+          keepPlaying = False
+          screenText = "You Win!"
+
+      if wildBots == aliveBots:
+          # All remaining Bots are WildBots, no need to wait for them to crash
           keepPlaying = False
           screenText = "You Win!"
       
@@ -437,6 +446,9 @@ def play_level():
          screen.blit(KeepPlayingText, [412,390]);
       botCountText = statusFont.render("Bots: "+str(aliveBots),1,(255,255,255));
       screen.blit(botCountText, [40,30]);
+
+      wildBotDestructText = statusFont.render("WildBots SelfDestruct!",1,(255,255,255));
+      screen.blit(wildBotDestructText, [40,40]);
       pygame.display.flip();
       #print("AliveBots: " + str(aliveBots));
    pygame.time.wait(1000);
