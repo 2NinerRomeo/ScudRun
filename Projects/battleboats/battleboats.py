@@ -35,15 +35,25 @@ class Boat:
         #TODO: See if the boat conflicts with other boats
         pass
     def autoPlace(self,boats,board):
-        self.row = random.randint(0,board.rows -1)
-        self.col = random.randint(0,board.cols -1)
+        self.vert = random.choice([True, False])
+        if(self.vert):
+            self.row = random.randint(0,board.rows -1 -self.size)
+            self.col = random.randint(0,board.cols -1)
+        else:
+            self.row = random.randint(0,board.rows -1)
+            self.col = random.randint(0,board.cols -1 -self.size)
+
         #Check for fit on board
         self.checkPlacement(board)
         #check for conflict with other boats
         for boat in boats:
             self.checkPlacement(boat)
         #Indicate occupation of spaces on the board
-        board.spaces[self.row][self.col].isBoat = True;
+        for i in range(self.size):
+            if(self.vert):
+                board.spaces[self.row+i][self.col].isBoat = True
+            else:
+                board.spaces[self.row][self.col+i].isBoat = True
 
 class Game:
     #def rand_col(self):
