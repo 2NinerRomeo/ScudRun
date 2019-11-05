@@ -28,10 +28,11 @@ class Boat:
     def __init__(self, size, name):
         self.size = size
         placed = False
+        self.spaces = []
     def checkPlacement(self,board):
         #TODO: See if the boad is contained within the board
         pass
-    def checkPlacement(self,boat):
+    def collidedWithOtherBoat(self,boat):
         #TODO: See if the boat conflicts with other boats
         pass
     def autoPlace(self,boats,board):
@@ -47,12 +48,14 @@ class Boat:
         self.checkPlacement(board)
         #check for conflict with other boats
         for boat in boats:
-            self.checkPlacement(boat)
+            self.collidedWithOtherBoat(boat)
         #Indicate occupation of spaces on the board
         for i in range(self.size):
             if(self.vert):
+                self.spaces.append([(self.row+i,self.col), False])
                 board.spaces[self.row+i][self.col].isBoat = True
             else:
+                self.spaces.append([(self.row,self.col+i), False])
                 board.spaces[self.row][self.col+i].isBoat = True
 
 class Game:
