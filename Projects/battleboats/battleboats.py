@@ -29,13 +29,13 @@ class Boat:
         self.size = size
         placed = False
         self.spaces = []
-    def checkPlacement(self,board):
+    def boatOffBoard(self,board):
         #TODO: See if the boad is contained within the board
-        pass
+        return False;
     def collidedWithOtherBoat(self,boat):
         #TODO: See if the boat conflicts with other boats
-        pass
-    def autoPlace(self,boats,board):
+        return False
+    def randomPosition(self):
         self.vert = random.choice([True, False])
         if(self.vert):
             self.row = random.randint(0,board.rows -1 -self.size)
@@ -44,11 +44,19 @@ class Boat:
             self.row = random.randint(0,board.rows -1)
             self.col = random.randint(0,board.cols -1 -self.size)
 
-        #Check for fit on board
-        self.checkPlacement(board)
-        #check for conflict with other boats
-        for boat in boats:
-            self.collidedWithOtherBoat(boat)
+   def autoPlace(self,boats,board):
+        placementOk = False
+        while(!placementOk):
+            #Choose a place for the boat.
+            self.randomPosition()
+            placementOk = True
+            #Check for fit on board
+            if self.boatOffBoard(board):
+                
+            #check for conflict with other boats
+            for boat in boats:
+                if self.collidedWithOtherBoat(boat):
+                    placmentOk = False
         #Indicate occupation of spaces on the board
         for i in range(self.size):
             if(self.vert):
