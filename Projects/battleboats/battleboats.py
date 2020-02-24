@@ -35,7 +35,7 @@ class Boat:
     def collidedWithOtherBoat(self,boat):
         #TODO: See if the boat conflicts with other boats
         return False
-    def randomPosition(self):
+    def randomPosition(self,board):
         self.vert = random.choice([True, False])
         if(self.vert):
             self.row = random.randint(0,board.rows -1 -self.size)
@@ -44,19 +44,20 @@ class Boat:
             self.row = random.randint(0,board.rows -1)
             self.col = random.randint(0,board.cols -1 -self.size)
 
-   def autoPlace(self,boats,board):
+    def autoPlace(self,boats,board):
         placementOk = False
-        while(!placementOk):
+        while(not placementOk):
             #Choose a place for the boat.
-            self.randomPosition()
+            self.randomPosition(board)
             placementOk = True
             #Check for fit on board
-            if self.boatOffBoard(board):
-                
+            #if self.boatOffBoard(board):
+            #    pass
             #check for conflict with other boats
             for boat in boats:
                 if self.collidedWithOtherBoat(boat):
                     placmentOk = False
+
         #Indicate occupation of spaces on the board
         for i in range(self.size):
             if(self.vert):
