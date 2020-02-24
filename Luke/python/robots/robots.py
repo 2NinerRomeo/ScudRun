@@ -305,7 +305,7 @@ def reset_game():
    #level(lockbots,wildbots,creepbots,nursebots,medkits):
    levels = [];
    levels += [Level(5,0,0,0,0)];
-   levels += [Level(2,5,0,0,0)];
+   levels += [Level(1,5,0,0,0)];
    levels += [Level(0,0,5,0,0)];
    #levels += [Level(0,10,10,0,0)];
    #levels += [Level(10,10,0,0,0)];
@@ -352,8 +352,10 @@ def play_level():
    global moblist;
    global thinglist;
    global screen_text;
+   frames = 0
    aliveBots = 0;
    while keepPlaying:
+      frames = frames + 1
       clock.tick(1000);
       #Handle Events (key press)
       for event in pygame.event.get():
@@ -425,8 +427,13 @@ def play_level():
 
       if wildBots == aliveBots:
           # All remaining Bots are WildBots, no need to wait for them to crash
-          keepPlaying = False
-          screenText = "You Win!"
+          # Old Logic: keepPlaying = False
+          if frames % 100 == 0:
+             for mob in moblist:
+                if mob.__class__ == Wildbot and mob.broken == False:
+                   mob.broken = True
+                   break
+             screenText = "You Win!"
       
       #Draw the screen
       screen.fill((12,0,128));
@@ -502,15 +509,22 @@ if(pygame.joystick.get_count()):
 #Start the game
 playing = True;
 level = 0;
+global levels
 while playing:
    reset_game();
-   while level < len(levels) and playing == True:      
+   while level <= len(levels) and playing == True:      
       setup_level(level);
+      print ("Starting Level " + str(level));
+      print ("  Total Levels " + str(len(levels))); 
       if play_level() == True:
          print ("Level " + str(level) + (" Complete"));
          level = level +1;
          if level == len(levels):
+            print ("No More Levels: " + str(level) + (" Playing = Done"));
             playing = False
       else:
+         print("Level: " + str(level))
+         print("Total Levels " + str(len(levels)))
+         print("Playing " + str(playing))
          playing = quit_menu();
    #if we beat the level = next level
