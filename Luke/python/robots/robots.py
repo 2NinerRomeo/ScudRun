@@ -307,9 +307,9 @@ def reset_game():
    levels += [Level(5,0,0,0,0)];
    levels += [Level(1,5,0,0,0)];
    levels += [Level(0,0,5,0,0)];
-   #levels += [Level(0,10,10,0,0)];
-   #levels += [Level(10,10,0,0,0)];
-   #levels += [Level(10,10,10,0,0)];
+   levels += [Level(0,10,10,0,0)];
+   levels += [Level(10,10,0,0,0)];
+   levels += [Level(10,10,10,0,0)];
 
    #test level
    #levels += [Level(1,0,1,0,0)];
@@ -426,14 +426,18 @@ def play_level():
           screenText = "You Win!"
 
       if wildBots == aliveBots:
+          wildBotDestructText = statusFont.render("WildBots SelfDestruct!",1,(255,255,255));
           # All remaining Bots are WildBots, no need to wait for them to crash
           # Old Logic: keepPlaying = False
-          if frames % 100 == 0:
+          if frames % 300 == 0:
              for mob in moblist:
                 if mob.__class__ == Wildbot and mob.broken == False:
                    mob.broken = True
                    break
              screenText = "You Win!"
+      else:
+          wildBotDestructText = statusFont.render("Wildbots are still alive",1,(255,255,255));
+
       
       #Draw the screen
       screen.fill((12,0,128));
@@ -454,7 +458,6 @@ def play_level():
       botCountText = statusFont.render("Bots: "+str(aliveBots),1,(255,255,255));
       screen.blit(botCountText, [40,30]);
 
-      wildBotDestructText = statusFont.render("WildBots SelfDestruct!",1,(255,255,255));
       screen.blit(wildBotDestructText, [40,40]);
       pygame.display.flip();
       #print("AliveBots: " + str(aliveBots));
