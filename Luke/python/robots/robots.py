@@ -457,7 +457,8 @@ def play_level():
          screen.blit(KeepPlayingText, [412,390]);
       botCountText = statusFont.render("Bots: "+str(aliveBots),1,(255,255,255));
       screen.blit(botCountText, [40,30]);
-
+      level_text = scorefont.render("level: "+str(level),1,(255,255,255));
+      screen.blit(level_text, [40,50])
       screen.blit(wildBotDestructText, [40,40]);
       pygame.display.flip();
       #print("AliveBots: " + str(aliveBots));
