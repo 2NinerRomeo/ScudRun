@@ -126,6 +126,18 @@ class Character(mob):
       with suppress_stdout():
          axis0 = joystick.get_axis( 0 )
          axis1 = joystick.get_axis( 1 )
+      pressed = pygame.key.get_pressed()
+      if pressed[pygame.K_x]:
+         axis0 = 0 
+         axis1 = 0
+      if pressed[pygame.K_w]:
+         axis1 = -1;
+      if pressed[pygame.K_a]:
+         axis0 = -1;
+      if pressed[pygame.K_s]:
+         axis1 = 1;
+      if pressed[pygame.K_d]:
+         axis0 = 1;
       #interpret the joystick axes
       x_speed =float(axis0*MAX_CHARACTER_SPEED);
       y_speed =float(axis1*MAX_CHARACTER_SPEED);
@@ -381,7 +393,8 @@ def play_level():
             screenText = "GAME OVER:  Quitter";
          if event.key == pygame.K_p and event.type == pygame.KEYDOWN:
             toggle_pause();
-#         if event.key == pygame.K_
+         if event.key == pygame.K_e:
+            player.tp_player_safe();
 
       #Read the Joystick
 #      axis0 = joystick.get_axis( 0 );
