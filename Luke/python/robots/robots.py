@@ -96,6 +96,8 @@ class thing:
 class mob:
    def __init__(self):
       pass
+   def after_player_collision(self):
+      pass
    def render(self):
       pass
    def update(self):
@@ -107,12 +109,16 @@ class mob:
          return True;
       else:
          return False;
-
 class Character(mob):
    def __init__(self):
-      self.pos_x = 512;
+      self.health = 100;
+      self.pos_x = 512
       self.pos_y = 384;
       self.broken = False;
+   def after_player_collision(self):
+      self.health = self.health -1;
+      if self.health == 0:
+         self.broken = True;
    def render(self):
       #pygame.draw.circle(screen, (192,192,192),(self.pos_x,self.pos_y),5, 0);
       #screen.blit(playerimg, [self.pos_x-5, self.pos_y-5]);
@@ -160,12 +166,13 @@ class Character(mob):
       print("teleporting...")
       teleportSound.play();
       #pygame.mixer.Channel(0).play(pygame.mixer.Sound('sounds/teleportSound'));
-
 class Lockbot(mob):
    def __init__(self):
       self.pos_x = random.randint(BOX_LEFT,BOX_RIGHT);
       self.pos_y = random.randint(BOX_TOP,BOX_BOTTOM);
       self.broken = False;
+   def after_player_collision(self):
+      print("lockbot collided with player")
    def render(self):
       # .. draw a robot
       if self.broken:
@@ -203,6 +210,15 @@ class Wildbot(mob):
                                        ROBOT_SPEED)];
       #self.velocity = [1, 1];
       self.broken = False;
+   def after_player_collision(self):
+      if(not self.broken):
+         self.pos_x += self.velocity[0];
+         self.pos_y += self.velocity[1];
+         if self.pos_x < BOX_LEFT or self.pos_x > BOX_RIGHT:
+            self.velocity[0] *= -1;
+            self.velocity[1] = random.randint(-ROBOT_SPEED,
+                                       ROBOT_SPEED);
+            bounceSound.play();
    def render(self):
       # .. draw a robot
       if self.broken:
@@ -239,6 +255,8 @@ class Creepbot(mob):
       self.pos_x = random.randint(BOX_LEFT,BOX_RIGHT);
       self.pos_y = random.randint(BOX_TOP,BOX_BOTTOM);
       self.broken = False;
+   def after_player_collision(self):
+      pass
    def render(self):
       # .. draw a robot
       if self.broken:
@@ -270,6 +288,8 @@ class Nursebot(mob):
       self.pos_x = random.randint(BOX_LEFT,BOX_RIGHT);
       self.pos_y = random.randint(BOX_TOP,BOX_BOTTOM);
       self.broken = False;
+   def after_player_collision(self):
+      pass
    def render(self):
       # .. draw a robot
       if self.broken:
@@ -368,12 +388,12 @@ def play_level():
    aliveBots = 0;
    while keepPlaying:
       frames = frames + 1
-      clock.tick(1000);
+      clock.tick(75);
       #Handle Events (key press)
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
-            sys.exit();
             screenText = "GAME OVER:  Quitter";
+            sys.exit();
          if event.type == pygame.JOYBUTTONDOWN:
             if not paused:
                if(joystick.get_button( 10 )):
@@ -389,8 +409,8 @@ def play_level():
          if not hasattr(event, 'key'):
             continue;
          if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
-            sys.exit();
             screenText = "GAME OVER:  Quitter";
+            sys.exit();
          if event.key == pygame.K_p and event.type == pygame.KEYDOWN:
             toggle_pause();
          if event.key == pygame.K_e:
@@ -416,12 +436,14 @@ def play_level():
             moblist[i].update(player);
              #Check for collistion with Player
          if(moblist[i].collided(player,10)):
-            player.broken = True;
-            keepPlaying = False
-            loseSound.play();
-            #pygame.mixer.Channel(2).play(pygame.mixer.Sound('sounds/loseSound'));
-            print ("you died");
-            screenText = "You died   GAME OVER";
+            moblist[i].after_player_collision();
+            player.after_player_collision();
+            if player.health == 0:
+               print ("you died");
+               screenText = "You died   GAME OVER";
+               player.broken = True;
+               keepPlaying = False
+               loseSound.play();
          #Check for collisions with other Bots
          for j in range(i+1,len(moblist)):
             if(moblist[i].collided(moblist[j],10)):
@@ -504,6 +526,7 @@ def quit_menu():
             continue;
          if event.key == pygame.K_y:
             waiting_for_user = False;
+            reset_game();
             return True;
          if event.key == pygame.K_n:
             waiting_for_user = False;
@@ -536,6 +559,7 @@ while playing:
       if play_level() == True:
          print ("Level " + str(level) + (" Complete"));
          level = level +1;
+         reset_game();
          if level == len(levels):
             print ("No More Levels: " + str(level) + (" Playing = Done"));
             playing = False
