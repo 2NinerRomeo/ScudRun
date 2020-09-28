@@ -66,7 +66,6 @@ paused = False;
 
 
 
-
 #define functions
    #define classes
 class Level:
