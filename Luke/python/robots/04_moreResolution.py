@@ -136,7 +136,6 @@ k_up = k_down = k_left = k_right = 0;
 speed = direction = 0;
 position = (random.randint(0,SCREEN_WIDTH),
             random.randint(0,SCREEN_HEIGHT));
-
 #particle init
 particlelist = [Particle() for count in range(NUMBER_OF_PARTICLES)];
 
