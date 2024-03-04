@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Attributes</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Input functions" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/scanw.html"><link rel="NEXT" title="Windows" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/scanw.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="ATTRIB"></a>8. Attributes</h1><p>We have seen an example of how attributes can be used to print characters with
+some special effects. Attributes, when set prudently, can present information in
+an easy, understandable manner. The following program takes a C file as input
+and prints the file with comments in bold. Scan through the code. </p><div class="EXAMPLE"><a name="BSIAT"></a><p><b>Example 5.  A Simple Attributes example </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">/* pager functionality by Joseph Spainhour" &lt;spainhou@bellsouth.net&gt; */
+#include &lt;ncurses.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char *argv[])
+{ 
+  int ch, prev, row, col;
+  prev = EOF;
+  FILE *fp;
+  int y, x;
+
+  if(argc != 2)
+  {
+    printf("Usage: %s &lt;a c file name&gt;\n", argv[0]);
+    exit(1);
+  }
+  fp = fopen(argv[1], "r");
+  if(fp == NULL)
+  {
+    perror("Cannot open input file");
+    exit(1);
+  }
+  initscr();				/* Start curses mode */
+  getmaxyx(stdscr, row, col);		/* find the boundaries of the screeen */
+  while((ch = fgetc(fp)) != EOF)	/* read the file till we reach the end */
+  {
+    getyx(stdscr, y, x);		/* get the current curser position */
+    if(y == (row - 1))			/* are we are at the end of the screen */
+    {
+      printw("&lt;-Press Any Key-&gt;");	/* tell the user to press a key */
+      getch();
+      clear();				/* clear the screen */
+      move(0, 0);			/* start at the beginning of the screen */
+    }
+    if(prev == '/' &amp;&amp; ch == '*')    	/* If it is / and * then only
+                                     	 * switch bold on */    
+    {
+      attron(A_BOLD);			/* cut bold on */
+      getyx(stdscr, y, x);		/* get the current curser position */
+      move(y, x - 1);			/* back up one space */
+      printw("%c%c", '/', ch); 		/* The actual printing is done here */
+    }
+    else
+      printw("%c", ch);
+    refresh();
+    if(prev == '*' &amp;&amp; ch == '/')
+      attroff(A_BOLD);        		/* Switch it off once we got *
+                                 	 * and then / */
+    prev = ch;
+  }
+  endwin();                       	/* End curses mode */
+  fclose(fp);
+  return 0;
+}</span></pre></font></td></tr></tbody></table></div><p> 
+Don't worry about all those initialization and other crap. Concentrate on 
+the while loop. It reads each character in the file and searches for the 
+pattern /*. Once it spots the pattern, it switches the BOLD attribute on with 
+<tt class="LITERAL"> attron()</tt> . When we get the pattern */ it is 
+switched off by <tt class="LITERAL"> attroff()</tt> .</p><p> 
+The above program also introduces us to two useful functions
+<tt class="LITERAL">getyx() </tt> and
+<tt class="LITERAL">move()</tt>. The first function gets the
+co-ordinates of the present cursor into the variables y, x. Since getyx() is a
+macro we don't have to pass pointers to variables. The function
+<tt class="LITERAL">move()</tt> moves the cursor to the co-ordinates
+given to it. </p><p> 
+The above program is really a simple one which doesn't do much. On these lines
+one could write a more useful program which reads a C file, parses it and prints
+it in different colors. One could even extend it to other languages as well.</p><div class="SECT2"><h2 class="SECT2"><a name="ATTRIBDETAILS"></a>8.1. The details</h2><p>Let's get into more details of attributes. The functions <tt class="LITERAL">attron(), attroff(), attrset() </tt>, and their sister functions
+<tt class="LITERAL"> attr_get()</tt> etc..  can be used to switch
+attributes on/off , get attributes and produce a colorful display.</p><p>The functions attron and attroff take a bit-mask of attributes and switch them 
+on or off, respectively. The following video attributes, which are defined in 
+&lt;curses.h&gt; can be passed to these functions. </p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    
+    A_NORMAL        Normal display (no highlight)
+    A_STANDOUT      Best highlighting mode of the terminal.
+    A_UNDERLINE     Underlining
+    A_REVERSE       Reverse video
+    A_BLINK         Blinking
+    A_DIM           Half bright
+    A_BOLD          Extra bright or bold
+    A_PROTECT       Protected mode
+    A_INVIS         Invisible or blank mode
+    A_ALTCHARSET    Alternate character set
+    A_CHARTEXT      Bit-mask to extract a character
+    COLOR_PAIR(n)   Color-pair number n 
+    </pre></font></td></tr></tbody></table><p> 
+The last one is the most colorful one :-) Colors are explained in the 
+<a href="#color" target="_top">next sections</a>.</p><p>We can OR(|) any number of above attributes to get a combined effect. If you 
+wanted reverse video with blinking characters you can use</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    attron(A_REVERSE | A_BLINK);</pre></font></td></tr></tbody></table></div><div class="SECT2"><h2 class="SECT2"><a name="ATTRONVSATTRSET"></a>8.2. attron() vs attrset()</h2><p>Then what is the difference between attron() and attrset()? attrset sets the
+attributes of window whereas attron just switches on the attribute given to it.
+So attrset() fully overrides whatever attributes the window previously had and
+sets it to the new attribute(s). Similarly attroff() just switches off the
+attribute(s) given to it as an argument. This gives us the flexibility of
+managing attributes easily.But if you use them carelessly you may loose track of
+what attributes the window has and garble the display. This is especially true
+while managing menus with colors and highlighting. So decide on a consistent
+policy and stick to it. You can always use <tt class="LITERAL"> standend()</tt> which is equivalent to <tt class="LITERAL"> attrset(A_NORMAL)</tt> which turns off all attributes and brings you to normal mode.</p></div><div class="SECT2"><h2 class="SECT2"><a name="ATTR_GET"></a>8.3. attr_get()</h2><p>The function attr_get() gets the current attributes and color pair of the
+window. Though we might not use this as often as the above functions, this is
+useful in scanning areas of screen. Say we wanted to do some complex update on
+screen and we are not sure what attribute each character is associated with.
+Then this function can be used with either attrset or attron to produce the
+desired effect.</p></div><div class="SECT2"><h2 class="SECT2"><a name="ATTR_FUNCS"></a>8.4. attr_ functions</h2><p>There are series of functions like attr_set(), attr_on etc.. These are similar
+to above functions except that they take parameters of type
+<tt class="LITERAL">attr_t</tt>.</p></div><div class="SECT2"><h2 class="SECT2"><a name="WATTRFUNCS"></a>8.5. wattr functions</h2><p>For each of the above functions we have a corresponding function with 'w' which
+operates on a particular window. The above functions operate on stdscr. </p></div><div class="SECT2"><h2 class="SECT2"><a name="CHGAT"></a>8.6. chgat() functions</h2><p>The function chgat() is listed in the end of the man page curs_attr. It actually
+is a useful one. This function can be used to set attributes for a group of
+characters without moving. I mean it !!! without moving the cursor :-) It
+changes the attributes of a given number of characters starting at the current
+cursor location.</p><p>We can give -1 as the character count to update till end of line. If you want to
+change attributes of characters from current position to end of line, just use
+this.</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    chgat(-1, A_REVERSE, 0, NULL);</pre></font></td></tr></tbody></table><p> 
+This function is useful when changing attributes for characters that are
+already on the screen. Move to the character from which you want to change and
+change the attribute. </p><p>Other functions wchgat(), mvchgat(), wchgat() behave similarly except that the w
+functions operate on the particular window. The mv functions first move the
+cursor then perform the work given to them. Actually chgat is a macro which is
+replaced by a wchgat() with stdscr as the window. Most of the "w-less" functions
+are macros.</p><div class="EXAMPLE"><a name="BWICH"></a><p><b>Example 6.  Chgat() Usage example </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+int main(int argc, char *argv[])
+{	initscr();			/* Start curses mode 		*/
+	start_color();			/* Start color functionality	*/
+	
+	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+	printw("A Big string which i didn't care to type fully ");
+	mvchgat(0, 0, -1, A_BLINK, 1, NULL);	
+	/* 
+	 * First two parameters specify the position at which to start 
+	 * Third parameter number of characters to update. -1 means till 
+	 * end of line
+	 * Forth parameter is the normal attribute you wanted to give 
+	 * to the charcter
+	 * Fifth is the color index. It is the index given during init_pair()
+	 * use 0 if you didn't want color
+	 * Sixth one is always NULL 
+	 */
+	refresh();
+    	getch();
+	endwin();			/* End curses mode		  */
+	return 0;
+}</span></pre></font></td></tr></tbody></table></div><p>This example also introduces us to the color world of curses. Colors will be 
+explained in detail later. Use 0 for no color.</p></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/scanw.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Input functions</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Windows</td></tr></tbody></table></div></body></html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Windows</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Attributes" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/attrib.html"><link rel="NEXT" title="Colors" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/color.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/attrib.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/color.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="WINDOWS"></a>9. Windows</h1><p>Windows form the most important concept in curses. You have seen the standard
+window stdscr above where all the functions implicitly operated on this window.
+Now to make design even a simplest GUI, you need to resort to windows.  The main
+reason you may want to use windows is to manipulate parts of the screen
+separately, for better efficiency, by updating only the windows that need to be
+changed and for a better design. I would say the last reason is the most
+important in going for windows. You should always strive for a better and
+easy-to-manage design in your programs. If you are writing big, complex GUIs
+this is of pivotal importance before you start doing anything.</p><div class="SECT2"><h2 class="SECT2"><a name="WINDOWBASICS"></a>9.1. The basics</h2><p>A Window can be created by calling the function
+<tt class="LITERAL">newwin()</tt>. It doesn't create any thing on the
+screen actually. It allocates memory for a structure to manipulate the window
+and updates the structure with data regarding the window like it's size, beginy,
+beginx etc.. Hence in curses, a window is just an abstraction of an imaginary
+window, which can be manipulated independent of other parts of screen. The
+function newwin() returns a pointer to structure WINDOW, which can be passed to
+window related functions like wprintw() etc.. Finally the window can be
+destroyed with delwin(). It will deallocate the memory associated with the
+window structure.</p></div><div class="SECT2"><h2 class="SECT2"><a name="LETBEWINDOW"></a>9.2. Let there be a Window !!!</h2><p>What fun is it, if a window is created and we can't see it. So the fun part
+begins by displaying the window. The function
+<tt class="LITERAL">box()</tt> can be used to draw a border around the
+window. Let's explore these functions in more detail in this example.</p><div class="EXAMPLE"><a name="BWIBO"></a><p><b>Example 7. Window Border example </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+
+WINDOW *create_newwin(int height, int width, int starty, int startx);
+void destroy_win(WINDOW *local_win);
+
+int main(int argc, char *argv[])
+{	WINDOW *my_win;
+	int startx, starty, width, height;
+	int ch;
+
+	initscr();			/* Start curses mode 		*/
+	cbreak();			/* Line buffering disabled, Pass on
+					 * everty thing to me 		*/
+	keypad(stdscr, TRUE);		/* I need that nifty F1 	*/
+
+	height = 3;
+	width = 10;
+	starty = (LINES - height) / 2;	/* Calculating for a center placement */
+	startx = (COLS - width) / 2;	/* of the window		*/
+	printw("Press F1 to exit");
+	refresh();
+	my_win = create_newwin(height, width, starty, startx);
+
+	while((ch = getch()) != KEY_F(1))
+	{	switch(ch)
+		{	case KEY_LEFT:
+				destroy_win(my_win);
+				my_win = create_newwin(height, width, starty,--startx);
+				break;
+			case KEY_RIGHT:
+				destroy_win(my_win);
+				my_win = create_newwin(height, width, starty,++startx);
+				break;
+			case KEY_UP:
+				destroy_win(my_win);
+				my_win = create_newwin(height, width, --starty,startx);
+				break;
+			case KEY_DOWN:
+				destroy_win(my_win);
+				my_win = create_newwin(height, width, ++starty,startx);
+				break;	
+		}
+	}
+		
+	endwin();			/* End curses mode		  */
+	return 0;
+}
+
+WINDOW *create_newwin(int height, int width, int starty, int startx)
+{	WINDOW *local_win;
+
+	local_win = newwin(height, width, starty, startx);
+	box(local_win, 0 , 0);		/* 0, 0 gives default characters 
+					 * for the vertical and horizontal
+					 * lines			*/
+	wrefresh(local_win);		/* Show that box 		*/
+
+	return local_win;
+}
+
+void destroy_win(WINDOW *local_win)
+{	
+	/* box(local_win, ' ', ' '); : This won't produce the desired
+	 * result of erasing the window. It will leave it's four corners 
+	 * and so an ugly remnant of window. 
+	 */
+	wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+	/* The parameters taken are 
+	 * 1. win: the window on which to operate
+	 * 2. ls: character to be used for the left side of the window 
+	 * 3. rs: character to be used for the right side of the window 
+	 * 4. ts: character to be used for the top side of the window 
+	 * 5. bs: character to be used for the bottom side of the window 
+	 * 6. tl: character to be used for the top left corner of the window 
+	 * 7. tr: character to be used for the top right corner of the window 
+	 * 8. bl: character to be used for the bottom left corner of the window 
+	 * 9. br: character to be used for the bottom right corner of the window
+	 */
+	wrefresh(local_win);
+	delwin(local_win);
+}</span></pre></font></td></tr></tbody></table></div></div><div class="SECT2"><h2 class="SECT2"><a name="BORDEREXEXPL"></a>9.3. Explanation</h2><p>Don't scream. I know it's a big example. But I have to explain some important
+things here :-). This program creates a rectangular window that can be moved 
+with left, right, up, down arrow keys. It repeatedly creates and destroys
+windows as user press a key. Don't go beyond the screen limits. Checking for
+those limits is left as an exercise for the reader. Let's dissect it by line by line.</p><p>The <tt class="LITERAL">create_newwin()</tt> function creates a window
+with <tt class="LITERAL">newwin() </tt> and displays a border around it
+with box. The function <tt class="LITERAL"> destroy_win()</tt> first
+erases the window from screen by painting a border with ' ' character and then
+calling <tt class="LITERAL">delwin()</tt> to deallocate memory related
+to it. Depending on the key the user presses, starty or startx is changed and a
+new window is created.</p><p>In the destroy_win, as you can see, I used wborder instead of box. The reason is
+written in the comments (You missed it. I know. Read the code :-)). wborder 
+draws a border around the window with the characters given to it as the 4 corner
+points and the 4 lines. To put it clearly, if you have called wborder as below:
+<table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');</pre></font></td></tr></tbody></table></p><p>it produces some thing like </p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    +------------+
+    |            |
+    |            |
+    |            |
+    |            |
+    |            |
+    |            |
+    +------------+</pre></font></td></tr></tbody></table></div><div class="SECT2"><h2 class="SECT2"><a name="OTHERSTUFF"></a>9.4. The other stuff in the example</h2><p>You can also see in the above examples, that I have used the variables COLS,
+LINES which are initialized to the screen sizes after initscr(). They can be
+useful in finding screen dimensions and finding the center co-ordinate of the
+screen as above. The function <tt class="LITERAL">getch()</tt> as usual
+gets the key from keyboard and according to the key it does the corresponding
+work. This type of switch- case is very common in any GUI based programs.</p></div><div class="SECT2"><h2 class="SECT2"><a name="OTHERBORDERFUNCS"></a>9.5. Other Border functions</h2><p>Above program is grossly inefficient in that with each press of a key, a window
+is destroyed and another is created. So let's write a more efficient program
+which uses other border related functions.</p><p>The following program uses <tt class="LITERAL">mvhline()</tt> and
+<tt class="LITERAL">mvvline()</tt> to achieve similar effect. These two
+functions are simple. They create a horizontal or vertical line of the specified
+length at the specified position.</p><div class="EXAMPLE"><a name="BOTBO"></a><p><b>Example 8.  More border functions</b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+typedef struct _win_border_struct {
+	chtype 	ls, rs, ts, bs, 
+	 	tl, tr, bl, br;
+}WIN_BORDER;
+
+typedef struct _WIN_struct {
+
+	int startx, starty;
+	int height, width;
+	WIN_BORDER border;
+}WIN;
+
+void init_win_params(WIN *p_win);
+void print_win_params(WIN *p_win);
+void create_box(WIN *win, bool flag);
+
+int main(int argc, char *argv[])
+{	WIN win;
+	int ch;
+
+	initscr();			/* Start curses mode 		*/
+	start_color();			/* Start the color functionality */
+	cbreak();			/* Line buffering disabled, Pass on
+					 * everty thing to me 		*/
+	keypad(stdscr, TRUE);		/* I need that nifty F1 	*/
+	noecho();
+	init_pair(1, COLOR_CYAN, COLOR_BLACK);
+
+	/* Initialize the window parameters */
+	init_win_params(&amp;win);
+	print_win_params(&amp;win);
+
+	attron(COLOR_PAIR(1));
+	printw("Press F1 to exit");
+	refresh();
+	attroff(COLOR_PAIR(1));
+	
+	create_box(&amp;win, TRUE);
+	while((ch = getch()) != KEY_F(1))
+	{	switch(ch)
+		{	case KEY_LEFT:
+				create_box(&amp;win, FALSE);
+				--win.startx;
+				create_box(&amp;win, TRUE);
+				break;
+			case KEY_RIGHT:
+				create_box(&amp;win, FALSE);
+				++win.startx;
+				create_box(&amp;win, TRUE);
+				break;
+			case KEY_UP:
+				create_box(&amp;win, FALSE);
+				--win.starty;
+				create_box(&amp;win, TRUE);
+				break;
+			case KEY_DOWN:
+				create_box(&amp;win, FALSE);
+				++win.starty;
+				create_box(&amp;win, TRUE);
+				break;	
+		}
+	}
+	endwin();			/* End curses mode		  */
+	return 0;
+}
+void init_win_params(WIN *p_win)
+{
+	p_win-&gt;height = 3;
+	p_win-&gt;width = 10;
+	p_win-&gt;starty = (LINES - p_win-&gt;height)/2;	
+	p_win-&gt;startx = (COLS - p_win-&gt;width)/2;
+
+	p_win-&gt;border.ls = '|';
+	p_win-&gt;border.rs = '|';
+	p_win-&gt;border.ts = '-';
+	p_win-&gt;border.bs = '-';
+	p_win-&gt;border.tl = '+';
+	p_win-&gt;border.tr = '+';
+	p_win-&gt;border.bl = '+';
+	p_win-&gt;border.br = '+';
+
+}
+void print_win_params(WIN *p_win)
+{
+#ifdef _DEBUG
+	mvprintw(25, 0, "%d %d %d %d", p_win-&gt;startx, p_win-&gt;starty, 
+				p_win-&gt;width, p_win-&gt;height);
+	refresh();
+#endif
+}
+void create_box(WIN *p_win, bool flag)
+{	int i, j;
+	int x, y, w, h;
+
+	x = p_win-&gt;startx;
+	y = p_win-&gt;starty;
+	w = p_win-&gt;width;
+	h = p_win-&gt;height;
+
+	if(flag == TRUE)
+	{	mvaddch(y, x, p_win-&gt;border.tl);
+		mvaddch(y, x + w, p_win-&gt;border.tr);
+		mvaddch(y + h, x, p_win-&gt;border.bl);
+		mvaddch(y + h, x + w, p_win-&gt;border.br);
+		mvhline(y, x + 1, p_win-&gt;border.ts, w - 1);
+		mvhline(y + h, x + 1, p_win-&gt;border.bs, w - 1);
+		mvvline(y + 1, x, p_win-&gt;border.ls, h - 1);
+		mvvline(y + 1, x + w, p_win-&gt;border.rs, h - 1);
+
+	}
+	else
+		for(j = y; j &lt;= y + h; ++j)
+			for(i = x; i &lt;= x + w; ++i)
+				mvaddch(j, i, ' ');
+				
+	refresh();
+
+}</span></pre></font></td></tr></tbody></table></div></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/attrib.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/color.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Attributes</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Colors</td></tr></tbody></table></div></body></html>

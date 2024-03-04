@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Just For Fun !!!</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title=" Tools and Widget Libraries" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/tools.html"><link rel="NEXT" title="References" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/ref.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/tools.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/ref.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="JUSTFORFUN"></a>20. Just For Fun !!!</h1><p>This section contains few programs written by me just for fun. They don't
+signify a better programming practice or the best way of using ncurses. They are
+provided here so as to allow beginners to get ideas and add more programs to
+this section.  If you have written a couple of nice, simple programs in curses
+and want them to included here, contact <a href="mailto:ppadala@gmail.com" target="_top">me</a>.</p><div class="SECT2"><h2 class="SECT2"><a name="GAMEOFLIFE"></a>20.1. The Game of Life</h2><p>Game of life is a wonder of math. In 
+<a href="http://www.math.com/students/wonders/life/life.html" target="_top">Paul Callahan</a>'s words</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><em>The Game of Life (or simply Life) is not a game in the conventional sense. There
+are no players, and no winning or losing. Once the "pieces" are placed in the
+starting position, the rules determine everything that happens later.
+Nevertheless, Life is full of surprises! In most cases, it is impossible to look
+at a starting position (or pattern) and see what will happen in the future. The
+only way to find out is to follow the rules of the game.</em></pre></font></td></tr></tbody></table><p>This program starts with a simple inverted U pattern and shows how wonderful
+life works. There is a lot of room for improvement in the program. You can let
+the user enter pattern of his choice or even take input from a file. You can
+also change rules and play with a lot of variations. Search on <a href="http://www.google.com/" target="_top">google</a> for interesting information on game
+of life.</p><p><em>File Path: JustForFun/life.c</em></p></div><div class="SECT2"><h2 class="SECT2"><a name="MAGIC"></a>20.2. Magic Square</h2><p>Magic Square, another wonder of math, is very simple to understand but very
+difficult to make. In a magic square sum of the numbers in each row, each column
+is equal.  Even diagnol sum can be equal. There are many variations which have
+special properties.</p><p>This program creates a simple magic square of odd order.</p><p><em>File Path: JustForFun/magic.c</em></p></div><div class="SECT2"><h2 class="SECT2"><a name="HANOI"></a>20.3. Towers of Hanoi</h2><p>The famous towers of hanoi solver. The aim of the game is to move the disks on
+the first peg to last peg, using middle peg as a temporary stay. The catch is
+not to place a larger disk over a small disk at any time.</p><p><em>File Path: JustForFun/hanoi.c</em></p></div><div class="SECT2"><h2 class="SECT2"><a name="QUEENS"></a>20.4. Queens Puzzle</h2><p>The objective of the famous N-Queen puzzle is to put N queens on a N X N chess
+board without attacking each other. </p><p>This program solves it with a simple backtracking technique.</p><p><em>File Path: JustForFun/queens.c</em></p></div><div class="SECT2"><h2 class="SECT2"><a name="SHUFFLE"></a>20.5. Shuffle</h2><p>A fun game, if you have time to kill. </p><p><em>File Path: JustForFun/shuffle.c</em></p></div><div class="SECT2"><h2 class="SECT2"><a name="TT"></a>20.6. Typing Tutor</h2><p>A simple typing tutor, I created more out of need than for ease of use. If you
+know how to put your fingers correctly on the keyboard, but lack practice, this
+can be helpful. </p><p><em>File Path: JustForFun/tt.c</em></p></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/tools.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/ref.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Tools and Widget Libraries</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">References</td></tr></tbody></table></div></body></html>

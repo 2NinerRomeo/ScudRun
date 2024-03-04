@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Interfacing with the mouse </title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Interfacing with the key board" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html"><link rel="NEXT" title="Screen Manipulation" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="MOUSE"></a>12. Interfacing with the mouse</h1><p>Now that you have seen how to get keys, lets do the same thing from mouse.
+Usually each UI allows the user to interact with both keyboard and mouse. </p><div class="SECT2"><h2 class="SECT2"><a name="MOUSEBASICS"></a>12.1. The Basics</h2><p>Before you do any thing else, the events you want to receive have to be enabled
+with <tt class="LITERAL">mousemask()</tt>.</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    mousemask(  mmask_t newmask,    /* The events you want to listen to */
+                mmask_t *oldmask)    /* The old events mask                */</pre></font></td></tr></tbody></table><p>The first parameter to above function is a bit mask of events you would like to 
+listen. By default, all the events are turned off. The bit mask <tt class="LITERAL"> ALL_MOUSE_EVENTS</tt> can be used to get all the events.</p><p>The following are all the event masks:</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    Name            Description
+       ---------------------------------------------------------------------
+       BUTTON1_PRESSED          mouse button 1 down
+       BUTTON1_RELEASED         mouse button 1 up
+       BUTTON1_CLICKED          mouse button 1 clicked
+       BUTTON1_DOUBLE_CLICKED   mouse button 1 double clicked
+       BUTTON1_TRIPLE_CLICKED   mouse button 1 triple clicked
+       BUTTON2_PRESSED          mouse button 2 down
+       BUTTON2_RELEASED         mouse button 2 up
+       BUTTON2_CLICKED          mouse button 2 clicked
+       BUTTON2_DOUBLE_CLICKED   mouse button 2 double clicked
+       BUTTON2_TRIPLE_CLICKED   mouse button 2 triple clicked
+       BUTTON3_PRESSED          mouse button 3 down
+       BUTTON3_RELEASED         mouse button 3 up
+       BUTTON3_CLICKED          mouse button 3 clicked
+       BUTTON3_DOUBLE_CLICKED   mouse button 3 double clicked
+       BUTTON3_TRIPLE_CLICKED   mouse button 3 triple clicked
+       BUTTON4_PRESSED          mouse button 4 down
+       BUTTON4_RELEASED         mouse button 4 up
+       BUTTON4_CLICKED          mouse button 4 clicked
+       BUTTON4_DOUBLE_CLICKED   mouse button 4 double clicked
+       BUTTON4_TRIPLE_CLICKED   mouse button 4 triple clicked
+       BUTTON_SHIFT             shift was down during button state change
+       BUTTON_CTRL              control was down during button state change
+       BUTTON_ALT               alt was down during button state change
+       ALL_MOUSE_EVENTS         report all button state changes
+       REPORT_MOUSE_POSITION    report mouse movement</pre></font></td></tr></tbody></table></div><div class="SECT2"><h2 class="SECT2"><a name="GETTINGEVENTS"></a>12.2. Getting the events</h2><p>Once a class of mouse events have been enabled, getch() class of functions
+return KEY_MOUSE every time some mouse event happens. Then the mouse event can
+be retrieved with <tt class="LITERAL">getmouse()</tt>.</p><p>The code approximately looks like this:</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    MEVENT event;
+
+    ch = getch();
+    if(ch == KEY_MOUSE)
+        if(getmouse(&amp;event) == OK)
+            .    /* Do some thing with the event */
+            .
+            .</pre></font></td></tr></tbody></table><p> 
+getmouse() returns the event into the pointer given to it. It's a structure
+which contains</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    typedef struct
+    {
+        short id;         /* ID to distinguish multiple devices */
+        int x, y, z;      /* event coordinates */
+        mmask_t bstate;   /* button state bits */
+    }    </pre></font></td></tr></tbody></table><p>The <tt class="LITERAL">bstate</tt> is the main variable we are
+interested in. It tells the button state of the mouse.</p><p>Then with a code snippet like the following, we can find out what happened.</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    if(event.bstate &amp; BUTTON1_PRESSED)
+        printw("Left Button Pressed");</pre></font></td></tr></tbody></table></div><div class="SECT2"><h2 class="SECT2"><a name="MOUSETOGETHER"></a>12.3. Putting it all Together</h2><p>That's pretty much interfacing with mouse. Let's create the same menu and enable
+mouse interaction. To make things simpler, key handling is removed.</p><div class="EXAMPLE"><a name="BMOME"></a><p><b>Example 11.  Access the menu with mouse !!! </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+#define WIDTH 30
+#define HEIGHT 10 
+
+int startx = 0;
+int starty = 0;
+
+char *choices[] = { 	"Choice 1",
+			"Choice 2",
+			"Choice 3",
+			"Choice 4",
+			"Exit",
+		  };
+
+int n_choices = sizeof(choices) / sizeof(char *);
+
+void print_menu(WINDOW *menu_win, int highlight);
+void report_choice(int mouse_x, int mouse_y, int *p_choice);
+
+int main()
+{	int c, choice = 0;
+	WINDOW *menu_win;
+	MEVENT event;
+
+	/* Initialize curses */
+	initscr();
+	clear();
+	noecho();
+	cbreak();	//Line buffering disabled. pass on everything
+
+	/* Try to put the window in the middle of screen */
+	startx = (80 - WIDTH) / 2;
+	starty = (24 - HEIGHT) / 2;
+	
+	attron(A_REVERSE);
+	mvprintw(23, 1, "Click on Exit to quit (Works best in a virtual console)");
+	refresh();
+	attroff(A_REVERSE);
+
+	/* Print the menu for the first time */
+	menu_win = newwin(HEIGHT, WIDTH, starty, startx);
+	print_menu(menu_win, 1);
+	/* Get all the mouse events */
+	mousemask(ALL_MOUSE_EVENTS, NULL);
+	
+	while(1)
+	{	c = wgetch(menu_win);
+		switch(c)
+		{	case KEY_MOUSE:
+			if(getmouse(&amp;event) == OK)
+			{	/* When the user clicks left mouse button */
+				if(event.bstate &amp; BUTTON1_PRESSED)
+				{	report_choice(event.x + 1, event.y + 1, &amp;choice);
+					if(choice == -1) //Exit chosen
+						goto end;
+					mvprintw(22, 1, "Choice made is : %d String Chosen is \"%10s\"", choice, choices[choice - 1]);
+					refresh(); 
+				}
+			}
+			print_menu(menu_win, choice);
+			break;
+		}
+	}		
+end:
+	endwin();
+	return 0;
+}
+
+
+void print_menu(WINDOW *menu_win, int highlight)
+{
+	int x, y, i;	
+
+	x = 2;
+	y = 2;
+	box(menu_win, 0, 0);
+	for(i = 0; i &lt; n_choices; ++i)
+	{	if(highlight == i + 1)
+		{	wattron(menu_win, A_REVERSE); 
+			mvwprintw(menu_win, y, x, "%s", choices[i]);
+			wattroff(menu_win, A_REVERSE);
+		}
+		else
+			mvwprintw(menu_win, y, x, "%s", choices[i]);
+		++y;
+	}
+	wrefresh(menu_win);
+}
+
+/* Report the choice according to mouse position */
+void report_choice(int mouse_x, int mouse_y, int *p_choice)
+{	int i,j, choice;
+
+	i = startx + 2;
+	j = starty + 3;
+	
+	for(choice = 0; choice &lt; n_choices; ++choice)
+		if(mouse_y == j + choice &amp;&amp; mouse_x &gt;= i &amp;&amp; mouse_x &lt;= i + strlen(choices[choice]))
+		{	if(choice == n_choices - 1)
+				*p_choice = -1;		
+			else
+				*p_choice = choice + 1;	
+			break;
+		}
+}</span></pre></font></td></tr></tbody></table></div></div><div class="SECT2"><h2 class="SECT2"><a name="MISCMOUSEFUNCS"></a>12.4. Miscellaneous Functions</h2><p>The functions mouse_trafo() and wmouse_trafo() can be used to convert to mouse
+co-ordinates to screen relative co-ordinates. See curs_mouse(3X) man page for details.</p><p>The  mouseinterval  function sets the maximum time (in thousands of a
+second) that can elapse between press and release events in order for
+them to be recognized as a click.  This function returns the previous
+interval value.  The default is one fifth of a second.</p></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Interfacing with the key board</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Screen Manipulation</td></tr></tbody></table></div></body></html>

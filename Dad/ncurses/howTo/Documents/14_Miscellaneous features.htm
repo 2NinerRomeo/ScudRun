@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Miscellaneous features</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Screen Manipulation" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html"><link rel="NEXT" title=" Other libraries " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/otherlib.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/otherlib.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="MISC"></a>14. Miscellaneous features</h1><p>Now you know enough features to write a good curses program, with all bells and
+whistles. There are some miscellaneous functions which are useful in various
+cases.  Let's go headlong into some of those.</p><div class="SECT2"><h2 class="SECT2"><a name="CURSSET"></a>14.1. curs_set()</h2><p>This function can be used to make the cursor invisible. The parameter to this
+function should be </p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    0 : invisible      or
+    1 : normal    or
+    2 : very visible.</pre></font></td></tr></tbody></table></div><div class="SECT2"><h2 class="SECT2"><a name="TEMPLEAVE"></a>14.2. Temporarily Leaving Curses mode</h2><p>Some times you may want to get back to cooked mode (normal line buffering mode)
+temporarily. In such a case you will first need to save the tty modes with a
+call to <tt class="LITERAL">def_prog_mode()</tt> and then call
+<tt class="LITERAL">endwin()</tt> to end the curses mode. This will
+leave you in the original tty mode. To get back to curses once you are done,
+call <tt class="LITERAL">reset_prog_mode() </tt>. This function returns
+the tty to the state stored by <tt class="LITERAL">def_prog_mode()</tt>. Then do refresh(), and you are back to the curses mode. Here
+is an example showing the sequence of things to be done.</p><div class="EXAMPLE"><a name="BTELE"></a><p><b>Example 12.  Temporarily Leaving Curses Mode </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+int main()
+{	
+	initscr();			/* Start curses mode 		  */
+	printw("Hello World !!!\n");	/* Print Hello World		  */
+	refresh();			/* Print it on to the real screen */
+	def_prog_mode();		/* Save the tty modes		  */
+	endwin();			/* End curses mode temporarily	  */
+	system("/bin/sh");		/* Do whatever you like in cooked mode */
+	reset_prog_mode();		/* Return to the previous tty mode*/
+					/* stored by def_prog_mode() 	  */
+	refresh();			/* Do refresh() to restore the	  */
+					/* Screen contents		  */
+	printw("Another String\n");	/* Back to curses use the full    */
+	refresh();			/* capabilities of curses	  */
+	endwin();			/* End curses mode		  */
+
+	return 0;
+}</span></pre></font></td></tr></tbody></table></div></div><div class="SECT2"><h2 class="SECT2"><a name="ACSVARS"></a>14.3. ACS_ variables</h2><p>If you have ever programmed in DOS, you know about those nifty characters in
+extended character set. They are printable only on some terminals. NCURSES 
+functions like <tt class="LITERAL">box()</tt> use these characters. All
+these variables start with ACS meaning alternative character set. You might have 
+noticed me using these characters in some of the programs above. Here's an example 
+showing all the characters.</p><div class="EXAMPLE"><a name="BACSVARS"></a><p><b>Example 13.  ACS Variables Example </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+int main()
+{
+        initscr();
+
+        printw("Upper left corner           "); addch(ACS_ULCORNER); printw("\n"); 
+        printw("Lower left corner           "); addch(ACS_LLCORNER); printw("\n");
+        printw("Lower right corner          "); addch(ACS_LRCORNER); printw("\n");
+        printw("Tee pointing right          "); addch(ACS_LTEE); printw("\n");
+        printw("Tee pointing left           "); addch(ACS_RTEE); printw("\n");
+        printw("Tee pointing up             "); addch(ACS_BTEE); printw("\n");
+        printw("Tee pointing down           "); addch(ACS_TTEE); printw("\n");
+        printw("Horizontal line             "); addch(ACS_HLINE); printw("\n");
+        printw("Vertical line               "); addch(ACS_VLINE); printw("\n");
+        printw("Large Plus or cross over    "); addch(ACS_PLUS); printw("\n");
+        printw("Scan Line 1                 "); addch(ACS_S1); printw("\n");
+        printw("Scan Line 3                 "); addch(ACS_S3); printw("\n");
+        printw("Scan Line 7                 "); addch(ACS_S7); printw("\n");
+        printw("Scan Line 9                 "); addch(ACS_S9); printw("\n");
+        printw("Diamond                     "); addch(ACS_DIAMOND); printw("\n");
+        printw("Checker board (stipple)     "); addch(ACS_CKBOARD); printw("\n");
+        printw("Degree Symbol               "); addch(ACS_DEGREE); printw("\n");
+        printw("Plus/Minus Symbol           "); addch(ACS_PLMINUS); printw("\n");
+        printw("Bullet                      "); addch(ACS_BULLET); printw("\n");
+        printw("Arrow Pointing Left         "); addch(ACS_LARROW); printw("\n");
+        printw("Arrow Pointing Right        "); addch(ACS_RARROW); printw("\n");
+        printw("Arrow Pointing Down         "); addch(ACS_DARROW); printw("\n");
+        printw("Arrow Pointing Up           "); addch(ACS_UARROW); printw("\n");
+        printw("Board of squares            "); addch(ACS_BOARD); printw("\n");
+        printw("Lantern Symbol              "); addch(ACS_LANTERN); printw("\n");
+        printw("Solid Square Block          "); addch(ACS_BLOCK); printw("\n");
+        printw("Less/Equal sign             "); addch(ACS_LEQUAL); printw("\n");
+        printw("Greater/Equal sign          "); addch(ACS_GEQUAL); printw("\n");
+        printw("Pi                          "); addch(ACS_PI); printw("\n");
+        printw("Not equal                   "); addch(ACS_NEQUAL); printw("\n");
+        printw("UK pound sign               "); addch(ACS_STERLING); printw("\n");
+
+        refresh();
+        getch();
+        endwin();
+
+	return 0;
+}</span></pre></font></td></tr></tbody></table></div></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/screen.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/otherlib.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Screen Manipulation</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Other libraries</td></tr></tbody></table></div></body></html>

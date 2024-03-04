@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>Colors</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Windows" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html"><link rel="NEXT" title="Interfacing with the key board" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="COLOR"></a>10. Colors</h1><div class="SECT2"><h2 class="SECT2"><a name="COLORBASICS"></a>10.1. The basics</h2><p>Life seems dull with no colors. Curses has a nice mechanism to handle colors.
+Let's get into the thick of the things with a small program.</p><div class="EXAMPLE"><a name="BSICO"></a><p><b>Example 9.  A Simple Color example </b></p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING"><span class="INLINEMEDIAOBJECT">#include &lt;ncurses.h&gt;
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string);
+int main(int argc, char *argv[])
+{	initscr();			/* Start curses mode 		*/
+	if(has_colors() == FALSE)
+	{	endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+	start_color();			/* Start color 			*/
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+
+	attron(COLOR_PAIR(1));
+	print_in_middle(stdscr, LINES / 2, 0, 0, "Viola !!! In color ...");
+	attroff(COLOR_PAIR(1));
+    	getch();
+	endwin();
+}
+void print_in_middle(WINDOW *win, int starty, int startx, int width, char *string)
+{	int length, x, y;
+	float temp;
+
+	if(win == NULL)
+		win = stdscr;
+	getyx(win, y, x);
+	if(startx != 0)
+		x = startx;
+	if(starty != 0)
+		y = starty;
+	if(width == 0)
+		width = 80;
+
+	length = strlen(string);
+	temp = (width - length)/ 2;
+	x = startx + (int)temp;
+	mvwprintw(win, y, x, "%s", string);
+	refresh();
+}
+</span></pre></font></td></tr></tbody></table></div><p>As you can see, to start using color, you should first call the function
+<tt class="LITERAL"> start_color()</tt>. After that, you can use color
+capabilities of your terminals using various functions. To find out whether a
+terminal has color capabilities or not, you can use
+<tt class="LITERAL">has_colors()</tt> function, which returns FALSE if
+the terminal does not support color. </p><p>Curses initializes all the colors supported by terminal when start_color() is
+called. These can be accessed by the define constants like
+<tt class="LITERAL">COLOR_BLACK </tt> etc. Now to actually start using
+colors, you have to define pairs. Colors are always used in pairs. That means
+you have to use the function <tt class="LITERAL">init_pair() </tt> to
+define the foreground and background for the pair number you give.  After that
+that pair number can be used as a normal attribute with <tt class="LITERAL">COLOR_PAIR()</tt>function. This may seem to be cumbersome at first.
+But this elegant solution allows us to manage color pairs very easily. To
+appreciate it, you have to look into the the source code of "dialog", a utility
+for displaying dialog boxes from shell scripts. The developers have defined
+foreground and background combinations for all the colors they might need and
+initialized at the beginning. This makes it very easy to set attributes just by
+accessing a pair which we already have defined as a constant.</p><p>The following colors are defined in <tt class="LITERAL">curses.h</tt>.
+You can use these as parameters for various color functions.
+<table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">        COLOR_BLACK   0
+        COLOR_RED     1
+        COLOR_GREEN   2
+        COLOR_YELLOW  3
+        COLOR_BLUE    4
+        COLOR_MAGENTA 5
+        COLOR_CYAN    6
+        COLOR_WHITE   7</pre></font></td></tr></tbody></table></p></div><div class="SECT2"><h2 class="SECT2"><a name="CHANGECOLORDEFS"></a>10.2. Changing Color Definitions</h2><p>The function <tt class="LITERAL">init_color()</tt>can be used to change
+the rgb values for the colors defined by curses initially. Say you wanted to
+lighten the intensity of red color by a minuscule. Then you can use this
+function as</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    init_color(COLOR_RED, 700, 0, 0);
+    /* param 1     : color name
+     * param 2, 3, 4 : rgb content min = 0, max = 1000 */</pre></font></td></tr></tbody></table><p>If your terminal cannot change the color definitions, the function returns ERR.
+The function <tt class="LITERAL">can_change_color()</tt> can be used to
+find out whether the terminal has the capability of changing color content or
+not.  The rgb content is scaled from 0 to 1000. Initially RED color is defined
+with content 1000(r), 0(g), 0(b). </p></div><div class="SECT2"><h2 class="SECT2"><a name="COLORCONTENT"></a>10.3. Color Content</h2><p>The functions <tt class="LITERAL">color_content()</tt> and
+<tt class="LITERAL">pair_content()</tt> can be used to find the color
+content and foreground, background combination for the pair. </p></div></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/keys.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Windows</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Interfacing with the key board</td></tr></tbody></table></div></body></html>

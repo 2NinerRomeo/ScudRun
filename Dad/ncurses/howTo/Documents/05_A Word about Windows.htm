@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html style="--pulse-color: #fffc0230;"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>A Word about Windows</title><meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.7"><link rel="HOME" title=" NCURSES Programming HOWTO " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html"><link rel="PREVIOUS" title="Initialization " href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/init.html"><link rel="NEXT" title="Output functions" href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/printw.html"><style>:root {
+  --pulse-color: #fffc002e;
+}
+
+._pericles_inspector {
+  border: 1px solid #000;
+  background-color: rgba(102, 136, 253, 0.2) !important;
+  color: #000 !important;
+  /* opacity: 0.6; */
+}
+
+/* ._pericles_app { */
+/* position: absolute; */
+/* top: 0; */
+/* left: 0; */
+/* width: 100%; */
+/* } */
+
+ps-sen {
+  cursor: pointer;
+}
+
+._pericles_pulse,
+._pericles_pulse,
+ps-sen:hover {
+  /*margin:100px; */
+  /*display: block; */
+  /*width: 22px; */
+  /*height: 22px; */
+  /*border-radius: 10%; */
+  background: var(--pulse-color);
+  /* opacity: 0.9; */
+  cursor: pointer;
+  /* box-shadow: 0 0 0 rgba(204, 169, 44, 0.2); */
+  box-shadow: 0 0 0 rgba(255, 0, 32, 0.6);
+  -webkit-animation: pulse 2s infinite;
+  -moz-animation: pulse 2s infinite;
+  -ms-animation: pulse 2s infinite;
+  -o-animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
+}
+
+/*.pulse:hover { */
+/*animation: none; */
+/*} */
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -webkit-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0.4);
+  }
+
+  70% {
+    -moz-box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 1px rgba(204, 169, 44, 0);
+  }
+
+  100% {
+    -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+    box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
+  }
+}
+</style></head><body class="SECT1" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="NAVHEADER"><table summary="Header navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><th colspan="3" align="center">NCURSES Programming HOWTO</th></tr><tr><td width="10%" align="left" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/init.html" accesskey="P">Prev</a></td><td width="80%" align="center" valign="bottom"></td><td width="10%" align="right" valign="bottom"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/printw.html" accesskey="N">Next</a></td></tr></tbody></table><hr align="LEFT" width="100%"></div><div class="SECT1"><h1 class="SECT1"><a name="AWORDWINDOWS"></a>5. A Word about Windows</h1><p> 
+Before we plunge into the myriad ncurses functions, let me clear few things
+about windows. Windows are explained in detail in following <a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html"> sections </a></p><p>A Window is an imaginary screen defined by curses system. A window does not mean
+a bordered window which you usually see on Win9X platforms. When curses is
+initialized, it creates a default window named
+<tt class="LITERAL">stdscr</tt> which represents your 80x25 (or the size
+of window in which you are running) screen.  If you are doing simple tasks like
+printing few strings, reading input etc., you can safely use this single window
+for all of your purposes. You can also create windows and call functions which
+explicitly work on the specified window.</p><p>For example, if you call</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    printw("Hi There !!!");
+    refresh();</pre></font></td></tr></tbody></table><p>It prints the string on stdscr at the present cursor position. Similarly the 
+call to refresh(), works on stdscr only. </p><p>Say you have created <a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/windows.html">windows</a> then you have to 
+call a function with a 'w' added to the usual function.</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    wprintw(win, "Hi There !!!");
+    wrefresh(win);</pre></font></td></tr></tbody></table><p>As you will see in the rest of the document, naming of functions follow the
+same convention. For each function there usually are three more functions.</p><table border="0" bgcolor="#E0E0E0" width="100%"><tbody><tr><td><font color="#000000"><pre class="PROGRAMLISTING">    printw(string);        /* Print on stdscr at present cursor position */
+    mvprintw(y, x, string);/* Move to (y, x) then print string     */
+    wprintw(win, string);  /* Print on window win at present cursor position */
+                           /* in the window */
+    mvwprintw(win, y, x, string);   /* Move to (y, x) relative to window */
+                                    /* co-ordinates and then print         */</pre></font></td></tr></tbody></table><p>Usually the w-less functions are macros which expand to corresponding w-function
+with stdscr as the window parameter.</p></div><div class="NAVFOOTER"><hr align="LEFT" width="100%"><table summary="Footer navigation table" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td width="33%" align="left" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/init.html" accesskey="P">Prev</a></td><td width="34%" align="center" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html" accesskey="H">Home</a></td><td width="33%" align="right" valign="top"><a href="https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/printw.html" accesskey="N">Next</a></td></tr><tr><td width="33%" align="left" valign="top">Initialization</td><td width="34%" align="center" valign="top">&nbsp;</td><td width="33%" align="right" valign="top">Output functions</td></tr></tbody></table></div></body></html>
