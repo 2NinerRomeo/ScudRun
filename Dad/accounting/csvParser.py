@@ -1,4 +1,5 @@
 import csv
+import sys
 
 class CSVParser:
     def __init__(self, file_path):
@@ -41,13 +42,21 @@ class CSVParser:
 
 # Usage example
 if __name__ == "__main__":
-    csv_parser = CSVParser('path_to_your_file.csv')
+    if len(sys.argv) < 2:
+        print("Please provide the path to the CSV file as an argument.")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+    csv_parser = CSVParser(file_path)
     csv_parser.read_csv()
     
     # Get a specific column
-    column_data = csv_parser.get_column('column_name')
+    column_name = 'column_name'  # Replace with the actual column name you want to retrieve
+    column_data = csv_parser.get_column(column_name)
+    print(f"Data from column '{column_name}':")
     print(column_data)
     
     # Convert to list of dictionaries
     dict_list = csv_parser.to_dict_list()
+    print("CSV data as list of dictionaries:")
     print(dict_list)
