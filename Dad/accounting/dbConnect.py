@@ -1,18 +1,26 @@
 import mysql.connector
 import json
 
-creds = json.load(open('creds.json'));
-#for i in creds:
-#    print(i)
+class Dbase:
+    def __init__(self,credFileName):
+        self.credFileName = credFileName;
+    def connect(self):
+        creds = json.load(open('creds.json'));
+        #for i in creds:
+        #    print(i)
 
-print (creds['host'])
-print (creds['user'])
-print (creds['pass'])
+        print (creds['host'])
+        print (creds['user'])
+        print (creds['pass'])
 
-mydb = mysql.connector.connect(
-  host=creds['host'],
-  user=creds['user'],
-  password=creds['pass']
-)
+        self.db = mysql.connector.connect(
+          host=creds['host'],
+          user=creds['user'],
+          password=creds['pass']);
+        print(self.db);
 
-print(mydb) 
+if __name__ == "__main__":
+    db = Dbase('creds.json')
+    db.connect();
+    
+    
