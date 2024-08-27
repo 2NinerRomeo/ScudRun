@@ -2,13 +2,28 @@ import csv
 import sys
 import dbConnect as db
 import csvParser as csv
+from enum import Enum
 import pdb
 
 CREDFILENAME = 'creds.json'
 
+class CardType(Enum):
+    CSP = 1
+    AMXP = 2
+
+def loadTransactions(db,csv,card):
+    if card == CardType.CSP:
+        print("Looks Like a Chase Statement")
+    elif card == CardType.AMXP:
+        print("Looks Like an Amex Statement")
+    else:
+        print("Unknown Statement, should not reach here")
+
+
+
+#_________________________Things get started here ____________________________#
+
 #def allItemsInList(candidateList, standardList):
-
-
 if len(sys.argv) < 2:
     print("Please provide the path to the CSV file as an argument.")
     sys.exit(1)
@@ -47,11 +62,11 @@ print(cardCsv.headers)
 print(type(cardCsv.headers))
 
 if(cardCsv.headers == chaseList):
-   print("Looks Like a Chase Statement")
+   loadTransactions(finDb,cardCsv,CardType.CSP)
 elif(cardCsv.headers == amexList):
-   print("Looks Like an Amex Statement")
+   loadTransactions(finDb,cardCsv,CardType.AMXP)
 else:
-   print("Looks like an unknown Statement")
+   print("Unknown Statement")
 
 # A python idiomatic way of checking for all the right
 # column headers, but it is not logically the same, since
