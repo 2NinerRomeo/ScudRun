@@ -3,9 +3,9 @@ import json
 
 class Dbase:
     def __init__(self,credFileName):
-        self.credFileName = credFileName;
+        self.credFileName = credFileName
     def connect(self):
-        creds = json.load(open('creds.json'));
+        creds = json.load(open('creds.json'))
         #for i in creds:
         #    print(i)
 
@@ -16,8 +16,8 @@ class Dbase:
         self.db = mysql.connector.connect(
           host=creds['host'],
           user=creds['user'],
-          password=creds['pass']);
-        print(self.db);
+          password=creds['pass'])
+        print(self.db)
 
 if __name__ == "__main__":
     db = Dbase('creds.json')

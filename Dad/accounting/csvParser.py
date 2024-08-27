@@ -47,7 +47,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     file_path = sys.argv[1]
-    csv_parser = CSVParser(file_path)
+    csv_parser = CSVParser.CSVParser(file_path)
     csv_parser.read_csv()
     
     # Get a specific column
