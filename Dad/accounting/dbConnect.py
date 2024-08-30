@@ -12,11 +12,18 @@ class Dbase:
         print (creds['host'])
         print (creds['user'])
         print (creds['pass'])
+        print (creds['dbase'])
 
         self.db = mysql.connector.connect(
           host=creds['host'],
           user=creds['user'],
-          password=creds['pass'])
+          password=creds['pass'],
+          database=creds['dbase'])
+#        self.db = mysql.connector.connect(
+#          host=creds['host'],
+#          user=creds['user'],
+#          password=creds['pass'])
+
         print(self.db)
 
 if __name__ == "__main__":

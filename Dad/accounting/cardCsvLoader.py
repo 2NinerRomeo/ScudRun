@@ -12,6 +12,8 @@ class CardType(Enum):
     AMXP = 2
 
 def loadTransactions(db,csv,card):
+    theCursor = db.db.cursor()
+
     if card == CardType.CSP:
         print("Looks Like a Chase Statement")
     elif card == CardType.AMXP:
@@ -19,6 +21,12 @@ def loadTransactions(db,csv,card):
     else:
         print("Unknown Statement, should not reach here")
 
+    query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
+    #vals = ("12/29/2023","12/31/2023","AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","")
+    vals = ('2023-12-09','2023-12-31',"AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","","-5920","0")
+    theCursor.execute(query,vals)
+    db.db.commit()
+    print(theCursor.rowcount," record inserted.");
 
 
 #_________________________Things get started here ____________________________#
@@ -61,6 +69,8 @@ amexList = ['Date',
 print(cardCsv.headers)
 print(type(cardCsv.headers))
 
+#pdb.set_trace()
+
 if(cardCsv.headers == chaseList):
    loadTransactions(finDb,cardCsv,CardType.CSP)
 elif(cardCsv.headers == amexList):
@@ -76,4 +86,4 @@ else:
 #else:
 #   print("Maybe not chase")
 
-pdb.set_trace()
+#pdb.set_trace()
