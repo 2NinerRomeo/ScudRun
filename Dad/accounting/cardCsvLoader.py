@@ -21,6 +21,10 @@ def loadTransactions(db,csv,card):
     else:
         print("Unknown Statement, should not reach here")
 
+    for row in csv.data:
+        print(row)
+
+    pdb.set_trace()
     query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
     #vals = ("12/29/2023","12/31/2023","AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","")
     vals = ('2023-12-09','2023-12-31',"AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","","-5920","0")
