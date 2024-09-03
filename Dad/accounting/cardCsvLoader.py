@@ -3,6 +3,7 @@ import sys
 import dbConnect as db
 import csvParser as csv
 from enum import Enum
+import datetime
 import pdb
 
 CREDFILENAME = 'creds.json'
@@ -11,7 +12,7 @@ class CardType(Enum):
     CSP = 1
     AMXP = 2
 
-def loadTransactions(db,csv,card):
+def loadTransactions(db,cardDictLst,card):
     theCursor = db.db.cursor()
 
     if card == CardType.CSP:
@@ -21,8 +22,8 @@ def loadTransactions(db,csv,card):
     else:
         print("Unknown Statement, should not reach here")
 
-    for row in csv.data:
-        print(row)
+    for trans in cardDictLst:
+        print(trans)
 
     pdb.set_trace()
     query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
@@ -53,7 +54,7 @@ finDb.connect()
 #print(column_data)
 
 # Convert to list of dictionaries
-dict_list = cardCsv.to_dict_list()
+cardDictList = cardCsv.to_dict_list()
 #print("CSV data as list of dictionaries:")
 #print(dict_list)
 
@@ -76,9 +77,9 @@ print(type(cardCsv.headers))
 #pdb.set_trace()
 
 if(cardCsv.headers == chaseList):
-   loadTransactions(finDb,cardCsv,CardType.CSP)
+   loadTransactions(finDb,cardDictList,CardType.CSP)
 elif(cardCsv.headers == amexList):
-   loadTransactions(finDb,cardCsv,CardType.AMXP)
+   loadTransactions(finDb,cardDictList,CardType.AMXP)
 else:
    print("Unknown Statement")
 
