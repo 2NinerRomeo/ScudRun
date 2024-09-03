@@ -28,6 +28,15 @@ def loadTransactions(db,cardDictLst,card):
 
     elif card == CardType.AMXP:
         print("Looks Like an Amex Statement")
+        for trans in cardDictLst:
+            print(trans) #Debug
+            pDate = datetime.datetime.strptime(trans['Date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+            amount = str(float(trans['Amount'])*-1)
+            print("Post Date: " + pDate + " Description: " + trans['Description'] + " amount: " + amount )
+            #query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
+            #vals = (tDate,pDate,trans['Description'],trans['Category'],trans['Type'],trans['Amount'],trans['Memo'],"-5920","0")
+            #theCursor.execute(query,vals)
+
     else:
         print("Unknown Statement, should not reach here")
 
