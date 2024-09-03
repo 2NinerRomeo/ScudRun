@@ -17,21 +17,23 @@ def loadTransactions(db,cardDictLst,card):
 
     if card == CardType.CSP:
         print("Looks Like a Chase Statement")
+        for trans in cardDictLst:
+            #print(trans) #Debug
+            tDate = datetime.datetime.strptime(trans['Transaction Date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+            pDate = datetime.datetime.strptime(trans['Post Date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+            print("Post Date: " + pDate + " Description: " + trans['Description'] + " amount: " + trans['Amount'] )
+            query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
+            vals = (tDate,pDate,trans['Description'],trans['Category'],trans['Type'],trans['Amount'],trans['Memo'],"-5920","0")
+            theCursor.execute(query,vals)
+
     elif card == CardType.AMXP:
         print("Looks Like an Amex Statement")
     else:
         print("Unknown Statement, should not reach here")
 
-    for trans in cardDictLst:
-        print(trans)
 
-    pdb.set_trace()
-    query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
-    #vals = ("12/29/2023","12/31/2023","AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","")
-    vals = ('2023-12-09','2023-12-31',"AR MANAGEMENT PHREESIA","Health & Wellness","Sale","-178.05","","-5920","0")
-    theCursor.execute(query,vals)
     db.db.commit()
-    print(theCursor.rowcount," record inserted.");
+    #print(theCursor.rowcount," record inserted."); # only counts the last insert :(
 
 
 #_________________________Things get started here ____________________________#
