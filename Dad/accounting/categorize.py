@@ -19,12 +19,14 @@ def clear():
 def printLabelMenu(labelDict):
     for cat in labelDict:
         print(str(cat) + ". " + labelDict[cat])
+    print("s - skip\nq - quit")
 
 def printTransactionInfo(trans):
-    print(trans[1])
-    print(trans[2])
-    print(trans[3])
-    print(trans)
+    print("Transaction# " + str(trans[0]))
+    print("Vendor:      " + trans[2])
+    print("Amount:      " + str(trans[3]))
+    print("Date:        " + str(trans[1]))
+    #print(trans) #Debug
 
 def assignTransactions(db):
     theCursor = db.db.cursor()
@@ -40,30 +42,44 @@ def assignTransactions(db):
 
 
     #get the list of unmatched transactions
-    query = ("SELECT postDate,description,cardTransactions.amount,"
+    query = ("SELECT id,postDate,description,cardTransactions.amount,"
             "transCat.amount from cardTransactions LEFT JOIN transCat"
-            " ON cardTransactions.id = transCat.transId;")
+            " ON cardTransactions.id = transCat.transId WHERE "
+             "transCat.amount IS NULL")
     theCursor.execute(query)
     theResults = theCursor.fetchall()
 
     #how many reusults
     transCount = len(theResults)
     currentTrans = 1
-
+    lastMsg = "Classifying expenditures"
+    
     #Have user classify single-category transactions
     for row in theResults:
+        print(lastMsg)
         printLabelMenu(catDict)
         print('\ntransaction ' + str(currentTrans) + '/' + str(transCount))
         printTransactionInfo(row)
-        input('Enter Category:')
-        ##More here
-        # Quit, Skip
-        print('500ms')
+        choice = input('Enter Category:')
+        if choice == 'q':
+            db.db.commit()
+            exit()
+        if choice == 's':
+            print('skipping')
+        else:
+            while(not int(choice) in catDict):
+                choice = input(choice +' was not one of your choices, try again ')
+            lastMsg = ('transaction# ' + str(row[0]) + " " + str(row[3]) +
+                       ' categorized as ' + catDict[int(choice)])
+            query = ("INSERT INTO transCat (transId, catId, amount) VALUES"
+                     " (%s, %s, %s)")
+            vals = (row[0],choice,row[3])
+            theCursor.execute(query,vals)
+
         sleep(0.5)
         currentTrans = currentTrans + 1 
         clear();
-        
-        
+    db.db.commit()
 
 
 

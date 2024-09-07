@@ -22,7 +22,7 @@ def loadTransactions(db,cardDictLst,card):
             tDate = datetime.datetime.strptime(trans['Transaction Date'], '%m/%d/%Y').strftime('%Y-%m-%d')
             pDate = datetime.datetime.strptime(trans['Post Date'], '%m/%d/%Y').strftime('%Y-%m-%d')
             print("Post Date: " + pDate + " Description: " + trans['Description'] + " amount: " + trans['Amount'] )
-            query = "INSERT into cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
+            query = "INSERT INTO cardTransactions (transDate, postDate, description, autoCat, autoType, amount, memo, account, card_id) VALUES (%s, %s,%s, %s,%s, %s,%s,%s,%s)"
             vals = (tDate,pDate,trans['Description'],trans['Category'],trans['Type'],trans['Amount'],trans['Memo'],"-5920","0")
             theCursor.execute(query,vals)
 
