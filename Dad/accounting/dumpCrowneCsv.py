@@ -1,10 +1,24 @@
 #import sys
 import dbConnect as db
 import pdb
-from os import system, name
-from time import sleep
+import csv
+import io
 
 CREDFILENAME = 'creds.json'
+
+def rowToCsv(row, delimiter=','):
+    output = io.StringIO()
+    csv_writer = csv.writer(output, delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+
+    # Write the row to the CSV writer
+    csv_writer.writerow(row)
+    
+    # Retrieve the CSV formatted string
+    csv_string = output.getvalue().strip()  # strip to remove extra newlines
+    output.close()
+
+    return csv_string    
+
 
 def dumpTransactions(db):
     theCursor = db.db.cursor()
@@ -23,9 +37,18 @@ def dumpTransactions(db):
     currentTrans = 1
     lastMsg = "Classifying expenditures"
     
-    #Have user classify single-category transactions
+    #Go through the rows, output results
+    f = open("examplefile.csv","a")
     for row in theResults:
-         print(row)
+        pdb.set_trace()
+        lrow = list(row)
+        lrow[3] = lrow[3]*-1
+        print(lrow)
+        csvRow = rowToCsv(lrow,',')
+        print(csvRow)
+        f.write(csvRow + '\n')
+
+    f.close()
 
 #_________________________Things get started here ____________________________#
 
