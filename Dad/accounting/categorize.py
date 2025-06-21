@@ -64,8 +64,11 @@ def assignTransactions(db):
         if choice == 'q':
             db.db.commit()
             exit()
-        if choice == 's':
+        elif choice == 's':
             print('skipping')
+            continue
+        elif choice == '':
+            print('try again')
         else:
             while(not int(choice) in catDict):
                 choice = input(choice +' was not one of your choices, try again ')
