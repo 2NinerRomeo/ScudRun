@@ -37,15 +37,19 @@ def dumpTransactions(db):
     query = ("SELECT cardTransactions.id,postDate,description,transCat.amount "
              "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
              "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
-             "expCategories.id WHERE expCategories.name = 'BeAirborne' OR "
-             "expCategories.name = 'Hangar'")
+             "expCategories.id WHERE (expCategories.name = 'BeAirborne' OR "
+             "expCategories.name = 'Hangar') AND YEAR(cardTransactions.transDate) = "
+             + str(yearInt))
     theCursor.execute(query)
     theResults = theCursor.fetchall()
 
+    print(query)
+
     #how many reusults
     transCount = len(theResults)
-    currentTrans = 1
-    lastMsg = "Classifying expenditures"
+    print("Matched Records: " + str(transCount))
+    #currentTrans = 1
+    #lastMsg = "Classifying expenditures"
     
     #Go through the rows, output results
     f = open("examplefile.csv","a")
@@ -57,7 +61,6 @@ def dumpTransactions(db):
         csvRow = rowToCsv(lrow,',')
         print(csvRow)
         f.write(csvRow + '\n')
-
     f.close()
 
 #_________________________Things get started here ____________________________#
