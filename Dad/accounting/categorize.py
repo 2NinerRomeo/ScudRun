@@ -78,6 +78,7 @@ def assignTransactions(db):
                      " (%s, %s, %s)")
             vals = (row[0],choice,row[3])
             theCursor.execute(query,vals)
+            db.db.commit()
 
         sleep(0.5)
         currentTrans = currentTrans + 1 

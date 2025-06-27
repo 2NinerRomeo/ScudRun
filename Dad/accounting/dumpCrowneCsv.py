@@ -21,6 +21,16 @@ def rowToCsv(row, delimiter=','):
 
 
 def dumpTransactions(db):
+    while True:
+        year = input('Choose Year: ')
+        try:
+            yearInt = int(year)
+            print(f"Outputing transactions from '{year}'")
+            break
+        except:
+            print(f"'{year}' is not a good year. Try again")
+            
+
     theCursor = db.db.cursor()
 
     #get the list of unmatched transactions
@@ -40,7 +50,7 @@ def dumpTransactions(db):
     #Go through the rows, output results
     f = open("examplefile.csv","a")
     for row in theResults:
-        pdb.set_trace()
+        #pdb.set_trace()
         lrow = list(row)
         lrow[3] = lrow[3]*-1
         print(lrow)
