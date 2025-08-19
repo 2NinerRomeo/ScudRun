@@ -53,7 +53,7 @@ def dumpTransactions(db):
     #get the list of unmatched transactions
     if busDict[selectedBusiness] == "BE Air + Hangar":
         query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
-                 "transCat.amount"
+                 "transCat.amount "
                  "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
                  "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
                  "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
@@ -63,7 +63,7 @@ def dumpTransactions(db):
         bname = "BeAirAndHangar"
     elif busDict[selectedBusiness] == "BE Real":
         query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
-                 "transCat.amount"
+                 "transCat.amount "
                  "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
                  "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
                  "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
