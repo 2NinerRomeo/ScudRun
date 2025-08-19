@@ -24,10 +24,13 @@ def dumpTransactions(db):
     theCursor = db.db.cursor()
 
     #get the list of unmatched transactions
-    query = ("SELECT cardTransactions.id,postDate,description,transCat.amount "
+    query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
+             "transCat.amount "
              "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
              "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
-             "expCategories.id WHERE expCategories.name = 'BeAirborne' OR "
+             "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
+             "= bankAccts.id "
+             "WHERE expCategories.name = 'BeAirborne' OR "
              "expCategories.name = 'Hangar'")
     theCursor.execute(query)
     theResults = theCursor.fetchall()
@@ -39,12 +42,12 @@ def dumpTransactions(db):
     
     #Go through the rows, output results
     f = open("examplefile.csv","a")
+    f.write('Entry Number;Expense Date;Vendor;Expense Account;Expense Amount\n')
     for row in theResults:
-        pdb.set_trace()
         lrow = list(row)
-        lrow[3] = lrow[3]*-1
+        lrow[4] = lrow[4]*-1
         print(lrow)
-        csvRow = rowToCsv(lrow,',')
+        csvRow = rowToCsv(lrow,';')
         print(csvRow)
         f.write(csvRow + '\n')
 
