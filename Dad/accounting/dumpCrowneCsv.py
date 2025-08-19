@@ -3,6 +3,7 @@ import dbConnect as db
 import pdb
 import csv
 import io
+from time import sleep
 
 CREDFILENAME = 'creds.json'
 
@@ -21,36 +22,79 @@ def rowToCsv(row, delimiter=','):
 
 
 def dumpTransactions(db):
+    #Year Selection
+    while True:
+        year = input('Choose Year: ')
+        try:
+            yearInt = int(year)
+            print(f"Outputing transactions from '{year}'")
+            break
+        except:
+            print(f"'{year}' is not a good year. Try again")
+    #Business Selection
+    busDict = {1: "BE Air + Hangar", 2: "BE Real"}
+    while True:
+        print(busDict)
+        for business in busDict:
+            print(str(business) + ". " + busDict[business])
+        selectedBusiness = int(input('Choose Business: '))
+        if selectedBusiness in busDict:
+            print(f"Outputting transactions for " + busDict[selectedBusiness])
+            sleep(0.5)
+            break
+        else:
+            print(f"That was not one of the choices. ")
+            sleep(0.5)
+            continue
+
     theCursor = db.db.cursor()
+    bname = "none"
 
     #get the list of unmatched transactions
-    query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
-             "transCat.amount "
-             "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
-             "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
-             "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
-             "= bankAccts.id "
-             "WHERE expCategories.name = 'BeAirborne' OR "
-             "expCategories.name = 'Hangar'")
+    if busDict[selectedBusiness] == "BE Air + Hangar":
+        query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
+                 "transCat.amount"
+                 "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
+                 "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
+                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
+                 "= bankAccts.id WHERE (expCategories.name = 'BeAirborne' OR "
+                 "expCategories.name = 'Hangar') AND YEAR(cardTransactions.transDate) = "
+                 + str(yearInt))
+        bname = "BeAirAndHangar"
+    elif busDict[selectedBusiness] == "BE Real":
+        query = ("SELECT cardTransactions.id,postDate,description,bankAccts.name,"
+                 "transCat.amount"
+                 "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
+                 "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
+                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
+                 "= bankAccts.id WHERE (expCategories.name = 'BeRealEstate') "
+                 "AND YEAR(cardTransactions.transDate) = "
+                 + str(yearInt))
+        bname = "BeRealEstate"
+
     theCursor.execute(query)
     theResults = theCursor.fetchall()
 
+    print(query)
+
     #how many reusults
     transCount = len(theResults)
-    currentTrans = 1
-    lastMsg = "Classifying expenditures"
+    print("Matched Records: " + str(transCount))
+    #currentTrans = 1
+    #lastMsg = "Classifying expenditures"
     
     #Go through the rows, output results
-    f = open("examplefile.csv","a")
+    ofname = str(yearInt) + "_" + bname + "_toUpload.csv"
+    f = open(ofname,"a")
     f.write('Entry Number;Expense Date;Vendor;Expense Account;Expense Amount\n')
     for row in theResults:
+        #pdb.set_trace()
         lrow = list(row)
         lrow[4] = lrow[4]*-1
         print(lrow)
         csvRow = rowToCsv(lrow,';')
         print(csvRow)
         f.write(csvRow + '\n')
-
     f.close()
 
 #_________________________Things get started here ____________________________#

@@ -64,8 +64,11 @@ def assignTransactions(db):
         if choice == 'q':
             db.db.commit()
             exit()
-        if choice == 's':
+        elif choice == 's':
             print('skipping')
+            continue
+        elif choice == '':
+            print('try again')
         else:
             while(not int(choice) in catDict):
                 choice = input(choice +' was not one of your choices, try again ')
@@ -75,6 +78,7 @@ def assignTransactions(db):
                      " (%s, %s, %s)")
             vals = (row[0],choice,row[3])
             theCursor.execute(query,vals)
+            db.db.commit()
 
         sleep(0.5)
         currentTrans = currentTrans + 1 
