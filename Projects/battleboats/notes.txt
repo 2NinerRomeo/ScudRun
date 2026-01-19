@@ -30,5 +30,114 @@ O Uncleared spaces
 * Hits %
 # Boat Present
 
+20260116 - Thinking about this because I'm onboard Moxie 216 and don't
+have internet access.  I can't install curses, which this seems to
+need.  I may refactor.
+
+Requirements for the design:
+* Be able to run in one of several modes
+** Text Only (Start with validated prompts, move to arrow keys.
+** Curses Mode
+** Graphic .. Matplotlib?  something else that lets me draw with
+primatives?
+** Bot v. Bot - collect statistics
+
+*interface for an opponent
+** Spin up a Bot
+** Another user running the same program. - Needs arbitration.
 
 
+
+Incoming Shot is a set of coordingates.  Board must return a result.
+One option:
+* Board has a list, or array of chars, which represent
+** MyBoatPresent(and which)
+
+When a boat is hit
+* Board has interface to boat, passes shot to boad ("Shot at X,Y")
+* Boat accepts shot at
+
+Managing how's turn it is
+* State machine
+** Waiting for other player to take a shot -
+** My turn to shoot.
+** Queue of incoming events.
+
+Bot Strategies
+* Random Shots
+
+Notes from Existing Game
+* Spaces: have statess "occupied" and Cleared"
+* Board has Spaces
+
+
+
+
+
+WILD IDEAS
+** Allow boats to move, unless perhaps they've been hit
+** Allow a "periscope view" of some radius, see what is adjacent to
+some coordinate.
+
+
+
+DESIGN
+
+MyBoard-Attibutes
+* Dimensions
+
+Boat - Attibutes
+* Length
+
+GameManager 
+* Is Master? Maing
+
+Try importing
+interfaces,  Is this necessary?
+
+
+
+
+
+TODO
+* Look into abstract Classes
+* Make a "curses" interface that inherits the interface
+* Make a "text" interface that inherits the interface
+
+
+Adopt Python conventions
+* Class Names
+* Variable Names
+
+
+20260119 - Got Curses installed while I had WiFi - The "game" is
+runnable
+Loooking over the code, it looks like I have an incomplete
+autoplacement algorithim.
+
+Todo:
+[*] Full implementation of Boat::boatOffBoard
+[ ] Add Argument Parser
+[ ] Add a debug mode
+[ ] Add a configuration file
+[ ] 
+
+Notes
+Board.disp appears to be a list of lists containing the board display
+character
+* It is initialized to a list of lists of "0"
+* It is, exxentialy, an artifact of the game play.
+* If I wanted to "x-ray" I could make a separate list
+
+I think what i'll do here is:
+[ ] Make a separate list of lists - for "x-ray"
+[ ] Have "Game" ask the board to update it self - Hiding disp from
+Game
+
+Argh! accidental delete! - Rolling back undos
+Board::shot
+
+commit notes
+* implementation of boatOffBoard (untested)
+* Board is managing its display
+* Argparse is in there
