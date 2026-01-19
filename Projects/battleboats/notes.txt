@@ -120,7 +120,6 @@ Todo:
 [ ] Add Argument Parser
 [ ] Add a debug mode
 [ ] Add a configuration file
-[ ] 
 
 Notes
 Board.disp appears to be a list of lists containing the board display
@@ -130,14 +129,21 @@ character
 * If I wanted to "x-ray" I could make a separate list
 
 I think what i'll do here is:
-[ ] Make a separate list of lists - for "x-ray"
-[ ] Have "Game" ask the board to update it self - Hiding disp from
+[x] Make a separate list of lists - for "x-ray"
+   [x] Make the xray
+   [x] Place Boats on xray
+   [x] display the xray
+[x] Have "Game" ask the board to update it self - Hiding disp from
+[x] Spescify type of boat on the x-ray 
 Game
 
 Argh! accidental delete! - Rolling back undos
-Board::shot
 
-commit notes
-* implementation of boatOffBoard (untested)
-* Board is managing its display
-* Argparse is in there
+Boat::Autoplace
+
+"Game" has placeBoats, which is currently wired to boat.autoplace
+Boat.autoplace
+
+
+[ ] maybe make the board a member of Boat
+[ ] Maybe make boats a member of board - but Game has them too.

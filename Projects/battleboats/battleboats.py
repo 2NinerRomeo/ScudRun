@@ -21,21 +21,39 @@ class Board:
          self.cols = cols
          self.spaces = []
          self.disp = []
+         self.xray = []
          for x in range(rows):
              self.spaces.append([Space() for count in range(cols)])
              self.disp.append(['O'] * cols)
+             self.xray.append([chr(46)] * cols)
+    def set_boat(self,row,col,char):
+        self.spaces[row][col].isBoat = True;
+        self.xray[row][col] = char
     def shot(self,row,col):
         if(self.spaces[row][col].isBoat):
-           self.disp[row][col] = '#'
+           self.disp[row][col] = char
         else:
            self.disp[row][col] = chr(46)
         return self.spaces[row][col].isBoat
 
 class Boat:
-    def __init__(self, size, name):
+    def __init__(self, size, name, char):
         self.size = size
         placed = False
         self.spaces = []
+        self.name = name
+        self.char = char
+    def checkPlacement(self,boats,board):
+        #Check for fit on board
+        #if self.boatOffBoard(board):
+        #    pass
+        #check for conflict with other boats
+        for boat in boats:
+            if self.collidedWithOtherBoat(boat):
+                return False
+        #If we get through all the checks...
+        return True
+
     def boatOffBoard(self,board):
         if self.vert:
             if self.length + self.row > board.rows:
@@ -70,23 +88,16 @@ class Boat:
         while(not placementOk):
             #Choose a place for the boat.
             self.randomPosition(board)
-            placementOk = True
-            #Check for fit on board
-            #if self.boatOffBoard(board):
-            #    pass
-            #check for conflict with other boats
-            for boat in boats:
-                if self.collidedWithOtherBoat(boat):
-                    placmentOk = False
+            placementOk = self.checkPlacement(boats,board)
 
         #Indicate occupation of spaces on the board
         for i in range(self.size):
             if(self.vert):
                 self.spaces.append([(self.row+i,self.col), False])
-                board.spaces[self.row+i][self.col].isBoat = True
+                board.set_boat(self.row+i,self.col,self.char);
             else:
                 self.spaces.append([(self.row,self.col+i), False])
-                board.spaces[self.row][self.col+i].isBoat = True
+                board.set_boat(self.row,self.col+i,self.char);
 
 class Game:
     #def rand_col(self):
@@ -97,11 +108,11 @@ class Game:
         return self.board.shot(row,col)
     def createBoats(self):
         self.allBoats = []
-        self.allBoats.append(Boat(5,"Carrier"))
-        self.allBoats.append(Boat(4,"Battleship"))
-        self.allBoats.append(Boat(3,"Cruiser"))
-        self.allBoats.append(Boat(3,"Submarine"))
-        self.allBoats.append(Boat(2,"PT Boat"))
+        self.allBoats.append(Boat(5,"Carrier","A"))
+        self.allBoats.append(Boat(4,"Battleship","B"))
+        self.allBoats.append(Boat(3,"Cruiser","C"))
+        self.allBoats.append(Boat(3,"Submarine","S"))
+        self.allBoats.append(Boat(2,"PT Boat","T"))
     def placeBoatsAuto(self):
         #place boats on board
         self.activeBoats = []
@@ -150,6 +161,21 @@ class GameInterface:
             else:
                 win.addstr(" " + " ".join(theGame.board.disp[row]) + "\n");
         win.addstr(str(self.cursor[0]) + " "+ str(self.cursor[1]) + "\n")
+    def print_xray(self,win):
+        win.clear();
+        for row in range(theGame.board.rows):
+            if(row == self.cursor[0]):
+                if(0 == self.cursor[1]):
+                    win.addstr(" ".join(theGame.board.xray[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.xray[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.xray[row][self.cursor[1]+1:len(theGame.board.xray[row])]) + "\n")
+                else:
+                    win.addstr(" " + " ".join(theGame.board.xray[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.xray[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.xray[row][self.cursor[1]+1:len(theGame.board.xray[row])]) + "\n")
+            else:
+                win.addstr(" " + " ".join(theGame.board.xray[row]) + "\n");
+        win.addstr(str(self.cursor[0]) + " "+ str(self.cursor[1]) + "\n")
         #print row;
         #print cur;
         #print cur[0];
@@ -183,6 +209,7 @@ def main(win):
     key=""
     win.clear()
     iface.print_board(win)
+    iface.print_xray(win)
     intro(win)
     #win.addstr("Detected key:")
     while 1:
