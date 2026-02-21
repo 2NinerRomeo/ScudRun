@@ -72,8 +72,23 @@ class Boat:
         #TODO: See if the boad is contained within the board
         return False;
     def collidedWithOtherBoat(self,boat):
-        #TODO: See if the boat conflicts with other boats
+        # See if the boat conflicts with other boats
+        def spaceCollision(self,rowcol,boat):
+            for s in boat.spaces:
+                if s[0] == rowcol:
+                    print(f"Boat collision at {s[0]} - Resetting {self.name}")
+                    return True
+            return False
+        if self.vert:  #search this column
+            for row in range(self.row,self.row+self.size):
+                if spaceCollision(self,(row,self.col),boat):
+                    return True
+        else: #search this row
+            for col in range(self.col,self.col+self.size):
+                if spaceCollision(self,(self.row,col),boat):
+                    return True
         return False
+
     def randomPosition(self,board):
         self.vert = random.choice([True, False])
         if(self.vert):
