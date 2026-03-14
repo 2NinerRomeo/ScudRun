@@ -1,3 +1,44 @@
+==Archictecture==
+
+classses
+* Space
+* Board
+* Boat
+* Game
+* GameInterface
+
+
+Game
+* __init__
+**Has Board
+**createBoats
+**placeBoats
+* Shot
+
+Game Interface
+* cursor movement
+* print_board
+* print_xray
+
+Should I rename this "GameInterfaceText"?
+
+Global
+* Game()
+* gameInterface(theGame)
+
+Main: Called by ncurses
+* interacts with game interface (iface)
+
+__name__ == __main__
+* Argparse with debug
+* launches ncurses with function main
+
+
+
+
+
+
+
 * Need an array of boats
 * Iterate the array
 _ Boats need a H/V property
@@ -147,3 +188,29 @@ Boat.autoplace
 
 [ ] maybe make the board a member of Boat
 [ ] Maybe make boats a member of board - but Game has them too.
+
+
+CHECKING FOR COLLISIONS
+boat.spaces
+* List of lists
+* Inner list: Tuple(x,y), Bool
+
+At the time that autoplace/collidedWithOtherBoat is called, 'spaces'
+in 'self' is empty, but we have row, col.
+We could check on rows if vert and cols if horz
+--done--
+
+
+CHECKING THAT BOATS RECORD HITS
+Path of a shot
+
+Board
+
+main calss theGame.shot
+[ ] Why doen't this go through the interface?
+TheGame - passes the shot to the board
+The board knows about "isboat" and owns boats
+At this time - Boat don't know they've been hit.
+Should the shots go through the boats? at the game level, or should
+they go through the Game or through the board
+The Boats are OWNED BY THE GAME

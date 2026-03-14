@@ -31,9 +31,9 @@ class Board:
         self.xray[row][col] = char
     def shot(self,row,col):
         if(self.spaces[row][col].isBoat):
-           self.disp[row][col] = char
+           self.disp[row][col] = chr(42) #'*'
         else:
-           self.disp[row][col] = chr(46)
+           self.disp[row][col] = chr(46) #"."
         return self.spaces[row][col].isBoat
 
 class Boat:
@@ -127,7 +127,7 @@ class Game:
         self.allBoats.append(Boat(4,"Battleship","B"))
         self.allBoats.append(Boat(3,"Cruiser","C"))
         self.allBoats.append(Boat(3,"Submarine","S"))
-        self.allBoats.append(Boat(2,"PT Boat","T"))
+        self.allBoats.append(Boat(2,"PT Boat","P"))
     def placeBoatsAuto(self):
         #place boats on board
         self.activeBoats = []
@@ -196,13 +196,14 @@ class GameInterface:
         #print cur[0];
         #print cur[1];
 
-#get input from the user
-def getInput(rowOrCol):
-   val = -1;
-   while(val < 0 or val > 10):
-      val = input(rowOrCol);
-   return val - 1;
-#Get user Column
+
+#get input from the user  - AME: is this dead code?
+#def getInput(rowOrCol):
+#   val = -1;
+#   while(val < 0 or val > 10):
+#      val = input(rowOrCol);
+#   return val - 1;
+##Get user Column
 
 
 
