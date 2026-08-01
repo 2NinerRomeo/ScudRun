@@ -3,6 +3,7 @@
 import random
 import os
 import curses
+import pdb
 
 def intro(win):
     #Game Message
@@ -20,21 +21,74 @@ class Board:
          self.cols = cols
          self.spaces = []
          self.disp = []
+         self.xray = []
          for x in range(rows):
              self.spaces.append([Space() for count in range(cols)])
              self.disp.append(['O'] * cols)
+             self.xray.append([chr(46)] * cols)
+    def set_boat(self,row,col,char):
+        self.spaces[row][col].isBoat = True;
+        self.xray[row][col] = char
+    def shot(self,row,col):
+        if(self.spaces[row][col].isBoat):
+           self.disp[row][col] = char
+        else:
+           self.disp[row][col] = chr(46)
+        return self.spaces[row][col].isBoat
 
 class Boat:
-    def __init__(self, size, name):
+    def __init__(self, size, name, char):
         self.size = size
         placed = False
         self.spaces = []
+        self.name = name
+        self.char = char
+    def checkPlacement(self,boats,board):
+        #Check for fit on board
+        #if self.boatOffBoard(board):
+        #    pass
+        #check for conflict with other boats
+        for boat in boats:
+            if self.collidedWithOtherBoat(boat):
+                return False
+        #If we get through all the checks...
+        return True
+
     def boatOffBoard(self,board):
+        if self.vert:
+            if self.length + self.row > board.rows:
+                print("Vert Boat at: " +
+                      str(self.length + self.row) +
+                      " > board rows: " +
+                      str(board.rows))
+                return True
+        else:
+            if self.length + self.cols > board.rows:
+                print("Horz Boat at: " +
+                      str(self.length + self.row) +
+                      " > board rows: " +
+                      str(board.rows))
+                return True
         #TODO: See if the boad is contained within the board
         return False;
     def collidedWithOtherBoat(self,boat):
-        #TODO: See if the boat conflicts with other boats
+        # See if the boat conflicts with other boats
+        def spaceCollision(self,rowcol,boat):
+            for s in boat.spaces:
+                if s[0] == rowcol:
+                    print(f"Boat collision at {s[0]} - Resetting {self.name}")
+                    return True
+            return False
+        if self.vert:  #search this column
+            for row in range(self.row,self.row+self.size):
+                if spaceCollision(self,(row,self.col),boat):
+                    return True
+        else: #search this row
+            for col in range(self.col,self.col+self.size):
+                if spaceCollision(self,(self.row,col),boat):
+                    return True
         return False
+
     def randomPosition(self,board):
         self.vert = random.choice([True, False])
         if(self.vert):
@@ -49,23 +103,16 @@ class Boat:
         while(not placementOk):
             #Choose a place for the boat.
             self.randomPosition(board)
-            placementOk = True
-            #Check for fit on board
-            #if self.boatOffBoard(board):
-            #    pass
-            #check for conflict with other boats
-            for boat in boats:
-                if self.collidedWithOtherBoat(boat):
-                    placmentOk = False
+            placementOk = self.checkPlacement(boats,board)
 
         #Indicate occupation of spaces on the board
         for i in range(self.size):
             if(self.vert):
                 self.spaces.append([(self.row+i,self.col), False])
-                board.spaces[self.row+i][self.col].isBoat = True
+                board.set_boat(self.row+i,self.col,self.char);
             else:
                 self.spaces.append([(self.row,self.col+i), False])
-                board.spaces[self.row][self.col+i].isBoat = True
+                board.set_boat(self.row,self.col+i,self.char);
 
 class Game:
     #def rand_col(self):
@@ -73,23 +120,17 @@ class Game:
     #def rand_row(self):
     #    return random.randint(0, self.board.rows - 1)
     def shot(self,row,col):
-        #if row == self.shipRow and col == self.shipCol:
-        if self.board.spaces[row][col].isBoat:
-           self.board.disp[row][col] = '#'
-           return True
-        else:
-           self.board.disp[row][col] = chr(46)
-           return False
+        return self.board.shot(row,col)
     def createBoats(self):
         self.allBoats = []
-        self.allBoats.append(Boat(5,"Carrier"))
-        self.allBoats.append(Boat(4,"Battleship"))
-        self.allBoats.append(Boat(3,"Cruiser"))
-        self.allBoats.append(Boat(3,"Submarine"))
-        self.allBoats.append(Boat(2,"PT Boat"))
+        self.allBoats.append(Boat(5,"Carrier","A"))
+        self.allBoats.append(Boat(4,"Battleship","B"))
+        self.allBoats.append(Boat(3,"Cruiser","C"))
+        self.allBoats.append(Boat(3,"Submarine","S"))
+        self.allBoats.append(Boat(2,"PT Boat","T"))
     def placeBoatsAuto(self):
         #place boats on board
-        self.activeBoats = [];
+        self.activeBoats = []
         for boat in self.allBoats:
             boat.autoPlace(self.activeBoats,self.board)
             self.activeBoats.append(boat)
@@ -105,31 +146,50 @@ class Game:
 
 class GameInterface:
     def __init__(self,theGame):
-        self.cursor = [4,4];
+        self.cursor = [4,4]
         self.height = theGame.board.rows
         self.width = theGame.board.cols
     def cursorHorz(self,right):
         if(right and self.cursor[1] < self.width -1):
-           self.cursor[1] = self.cursor[1] + 1;
+           self.cursor[1] = self.cursor[1] + 1
         if(not right and self.cursor[1] > 0):
-           self.cursor[1] = self.cursor[1] - 1;
-        print self.cursor;
+           self.cursor[1] = self.cursor[1] - 1
+        print(self.cursor)
     def cursorVert(self,up):
         if(up and self.cursor[0] > 0):
            self.cursor[0] = self.cursor[0] - 1;
         if(not up and self.cursor[0] < self.height -1):
            self.cursor[0] = self.cursor[0] + 1;
-        print self.cursor;
-    def printBoard(self,win):
+        print(self.cursor)
+    def print_board(self,win):
         win.clear();
         for row in range(theGame.board.rows):
             if(row == self.cursor[0]):
                 if(0 == self.cursor[1]):
-                    win.addstr(" ".join(theGame.board.disp[row][0:self.cursor[1]]) + "[" + theGame.board.disp[row][self.cursor[1]] + "]" + " ".join(theGame.board.disp[row][self.cursor[1]+1:len(theGame.board.disp[row])]) + "\n")
+                    win.addstr(" ".join(theGame.board.disp[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.disp[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.disp[row][self.cursor[1]+1:len(theGame.board.disp[row])]) + "\n")
                 else:
-                    win.addstr(" " + " ".join(theGame.board.disp[row][0:self.cursor[1]]) + "[" + theGame.board.disp[row][self.cursor[1]] + "]" + " ".join(theGame.board.disp[row][self.cursor[1]+1:len(theGame.board.disp[row])]) + "\n")
+                    win.addstr(" " + " ".join(theGame.board.disp[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.disp[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.disp[row][self.cursor[1]+1:len(theGame.board.disp[row])]) + "\n")
             else:
                 win.addstr(" " + " ".join(theGame.board.disp[row]) + "\n");
+        win.addstr(str(self.cursor[0]) + " "+ str(self.cursor[1]) + "\n")
+    def print_xray(self,win):
+        win.clear();
+        for row in range(theGame.board.rows):
+            if(row == self.cursor[0]):
+                if(0 == self.cursor[1]):
+                    win.addstr(" ".join(theGame.board.xray[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.xray[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.xray[row][self.cursor[1]+1:len(theGame.board.xray[row])]) + "\n")
+                else:
+                    win.addstr(" " + " ".join(theGame.board.xray[row][0:self.cursor[1]]) +
+                               "[" + theGame.board.xray[row][self.cursor[1]] + "]" +
+                               " ".join(theGame.board.xray[row][self.cursor[1]+1:len(theGame.board.xray[row])]) + "\n")
+            else:
+                win.addstr(" " + " ".join(theGame.board.xray[row]) + "\n");
         win.addstr(str(self.cursor[0]) + " "+ str(self.cursor[1]) + "\n")
         #print row;
         #print cur;
@@ -153,7 +213,7 @@ def getInput(rowOrCol):
 #   guessRow = getInput("row: ");
 #   guessCol = getInput("col: ");
 #   board[guessRow][guessCol] = 'x';
-#   printBoard(board,cursor);
+#   print_board(board,cursor);
 
 theGame = Game();
 iface = GameInterface(theGame);
@@ -163,7 +223,8 @@ def main(win):
     win.nodelay(True)
     key=""
     win.clear()
-    iface.printBoard(win)
+    iface.print_board(win)
+    iface.print_xray(win)
     intro(win)
     #win.addstr("Detected key:")
     while 1:
@@ -177,26 +238,26 @@ def main(win):
                      iface.cursorHorz(True)
                  except Exception as e:
                      win.addstr(str(e))
-                 iface.printBoard(win)
+                 iface.print_board(win)
             if key == "KEY_LEFT":
                  iface.cursorHorz(False)
-                 iface.printBoard(win)
+                 iface.print_board(win)
             if key == "KEY_UP":
                  try:
                      iface.cursorVert(True)
                  except Exception as e:
                      win.addstr(str(e))
-                 iface.printBoard(win)
+                 iface.print_board(win)
             if key == "KEY_DOWN":
                  iface.cursorVert(False)
-                 iface.printBoard(win)
+                 iface.print_board(win)
             if key == " ":
                  shotstr = "FIRE!\n"
                  if(theGame.shot(iface.cursor[0],iface.cursor[1])):
                      shotstr = "****Hit!*****\n"
                  else:
                      shotstr =  "----Miss!---\n"
-                 iface.printBoard(win)
+                 iface.print_board(win)
                  win.addstr(shotstr)
             #win.addstr(key + "\n")
             #win.addstr("0 "+ str(iface.cursor[0]) + "\n")
@@ -208,4 +269,11 @@ def main(win):
         except Exception as e:
             pass
 
-curses.wrapper(main)
+
+if(__name__ == "__main__"):
+   import argparse
+   
+   parser = argparse.ArgumentParser(description = "Battle Boats! - Programming for fun.")
+   parser.add_argument("--debug", action ="store_true", help="Debug for the developer")
+
+   curses.wrapper(main)
