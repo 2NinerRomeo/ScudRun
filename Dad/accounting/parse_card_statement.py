@@ -1,12 +1,23 @@
 import argparse
 import os
 import re
+from datetime import datetime
 from decimal import Decimal
 
 try:
     from PyPDF2 import PdfFileReader
 except ImportError:  # pragma: no cover - optional dependency for local testing
     PdfFileReader = None
+
+
+def format_sql_date(date_str):
+    """Convert a US-formatted date string to YYYY-MM-DD for SQL."""
+    for fmt in ("%m/%d/%Y", "%m/%d/%y"):
+        try:
+            return datetime.strptime(date_str, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    raise ValueError(f"Could not parse date: {date_str}")
 
 def parse_chase_statement(normalized_text):
     """Extract statement details from a Chase PDF statement.
@@ -35,8 +46,8 @@ def parse_chase_statement(normalized_text):
     return {
         "Previous Balance": f"${previous_balance_match.group(1)}",
         "Current Balance": f"${current_balance_match.group(1)}",
-        "Opening Date": date_range_match.group(1),
-        "Closing Date": date_range_match.group(2),
+        "Opening Date": format_sql_date(date_range_match.group(1)),
+        "Closing Date": format_sql_date(date_range_match.group(2)),
         "Account Number": account_number_match.group(1) #+ account_number_match.group(2) #+ account_number_match.group(3) + account_number_match.group(4)
     }
 
@@ -81,7 +92,7 @@ def parse_amex_statement(normalized_text):
     return {
         "Previous Balance": signed_amounts[0],
         "Current Balance": f"${current_balance:,.2f}",
-        "Closing Date": closing_date_match.group(1),
+        "Closing Date": format_sql_date(closing_date_match.group(1)),
         "Account Number": account_number_match.group(1)
     }
 
