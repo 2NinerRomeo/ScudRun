@@ -42,6 +42,7 @@ def parse_statement_files(root_dir: str) -> List[Dict[str, Any]]:
     """Parse all statement PDFs under the directory and return the dictionaries sorted by Closing Date."""
     statements = []
     for pdf_path in find_statement_pdfs(root_dir):
+        print(f"Parsing statement PDF: {pdf_path}")
         parsed = parse_statement_info(pdf_path)
         statements.append(parsed)
 

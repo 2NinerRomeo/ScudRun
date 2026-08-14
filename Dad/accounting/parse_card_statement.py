@@ -3,6 +3,7 @@ import os
 import re
 from datetime import datetime
 from decimal import Decimal
+import pdb
 
 try:
     from PyPDF2 import PdfFileReader
@@ -29,10 +30,10 @@ def parse_chase_statement(normalized_text):
     - Closing Date
     - Account Number
     """
-    previous_balance_match = re.search(r"Previous Balance\s*\$([0-9,]+\.\d{2})", normalized_text)
-    current_balance_match = re.search(r"(?:New Balance|Current Balance)\s*\$([0-9,]+\.\d{2})", normalized_text)
+    previous_balance_match = re.search(r"Previous Balance\s*(?P<sign>[-])?\$(?P<amount>[0-9,]+\.\d{2})", normalized_text)
+    current_balance_match = re.search(r"(?:New Balance|Current Balance)\s*(?P<sign>[-])?\$(?P<amount>[0-9,]+\.\d{2})", normalized_text)
     date_range_match = re.search(r"Opening/Closing Date\s*([0-9]{2}/[0-9]{2}/[0-9]{2})\s*-\s*([0-9]{2}/[0-9]{2}/[0-9]{2})", normalized_text)
-    account_number_match = re.search(r"Account number:\s*([0-9]{4}\s*[0-9]{4}\s*[0-9]{4}\s*[0-9]{4})", normalized_text)
+    account_number_match = re.search(r"Account number:\s*([0-9|X]{4})\s*([0-9|X]{4})\s*([0-9|X]{4})\s*([0-9]{4})", normalized_text)
 
     if not previous_balance_match:
         raise ValueError("Could not find Previous Balance in the PDF text")
@@ -43,12 +44,19 @@ def parse_chase_statement(normalized_text):
     if not account_number_match:
         raise ValueError("Could not find Account Number in the PDF text")
 
+    previous_balance = previous_balance_match.group("amount").replace(",", "")
+    current_balance = current_balance_match.group("amount").replace(",", "")
+    if previous_balance_match.group("sign") == "-":
+        previous_balance = f"-{previous_balance}"
+    if current_balance_match.group("sign") == "-":
+        current_balance = f"-{current_balance}"
+
     return {
-        "Previous Balance": f"${previous_balance_match.group(1)}",
-        "Current Balance": f"${current_balance_match.group(1)}",
+        "Previous Balance": previous_balance,
+        "Current Balance": current_balance,
         "Opening Date": format_sql_date(date_range_match.group(1)),
         "Closing Date": format_sql_date(date_range_match.group(2)),
-        "Account Number": account_number_match.group(1) #+ account_number_match.group(2) #+ account_number_match.group(3) + account_number_match.group(4)
+        "Account Number": account_number_match.group(4) #+ account_number_match.group(2) #+ account_number_match.group(3) + account_number_match.group(4)
     }
 
 def parse_amex_statement(normalized_text):
@@ -134,6 +142,7 @@ def parse_statement_info(file_name):
     if chase_match and amex_match:
         raise ValueError("PDF contains both Chase and American Express text; cannot determine statement type")
     if not chase_match and not amex_match:
+        pdb.set_trace()  # Debugging breakpoint
         raise ValueError("PDF does not contain Chase or American Express text; cannot determine statement type")
     
     if chase_match:
