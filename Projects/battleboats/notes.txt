@@ -214,3 +214,44 @@ At this time - Boat don't know they've been hit.
 Should the shots go through the boats? at the game level, or should
 they go through the Game or through the board
 The Boats are OWNED BY THE GAME
+
+
+==Feature== Boat display
+Shows the status of each boat.
+Ideally, this shows what is happening to the primary (us)
+AA**A
+BBBB
+C*C
+SSS
+PP
+
+Prerequisite: Shot makes it to boat
+
+
+==Feature== Split the board
+* My board - I know where my boats are
+* Opponent Board - I develop what I know of it - Maybe call it "scope"
+
+
+==Feature Player Class== 
+[ ] Define relationship to interface
+[ ] Base Class
+[ ] Derived human class
+[ ] Derived robot class
+
+First Robot
+[ ] Random
+Second Robot
+[ ] Do whatever the human does
+
+
+==Feature== Game Broker
+It may be time also to make an opponent
+[ ] configuration file
+[ ] 
+
+
+
+
+
+-First 
