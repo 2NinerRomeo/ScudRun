@@ -46,6 +46,7 @@ def parse_statement_files(root_dir: str) -> List[Dict[str, Any]]:
         parsed = parse_statement_info(pdf_path)
         statements.append(parsed)
 
+    # Sort by closing date in SQL format so the statements are in chronological order.
     return sorted(statements, key=lambda item: item.get("Closing Date", "0000-00-00"))
 
 
