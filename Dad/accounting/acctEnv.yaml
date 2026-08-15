@@ -1,0 +1,13 @@
+# Command to create the environment: conda env create -f acctEnv.yaml
+# Command to update the environment: conda env update -f acctEnv.yaml --prune
+name: acctHelp38
+#channels:
+#  - conda-forge
+#  - defaults
+dependencies:
+  - python=3.8
+  - mysql
+  - pypdf
+#  - pip:
+#    - seaborn==0.13.0
+#    - xgboost

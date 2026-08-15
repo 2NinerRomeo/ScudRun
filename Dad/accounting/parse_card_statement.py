@@ -6,9 +6,9 @@ from decimal import Decimal
 import pdb
 
 try:
-    from PyPDF2 import PdfFileReader
-except ImportError:  # pragma: no cover - optional dependency for local testing
-    PdfFileReader = None
+    from pypdf import PdfReader
+except ImportError:  # pragma: no cover - fallback if pypdf is unavailable
+    PdfReader = None
 
 
 def format_sql_date(date_str):
@@ -68,38 +68,48 @@ def parse_amex_statement(normalized_text):
     - Closing Date
     - Account Number
     """
-    
-    # The AMEX summary uses a line of labels followed by signed dollar amounts.
-    summary_match = re.search(
-        r"Previous Balance\s+Payments/Credits\s+New Charges\s+Fees\s+Interest Charged\s+(?P<summary>.*?)(?:Closing Date:|Account Ending:|$)",
-        normalized_text
-    )
     closing_date_match = re.search(r"Closing Date\s*([0-9]{2}/[0-9]{2}/[0-9]{2})", normalized_text)
     account_number_match = re.search(r"Account Ending\s*([0-9]{1}-[0-9]{5})", normalized_text)
 
-    if not summary_match:
-        raise ValueError("Could not find AMEX dollar summary values in the PDF text")
     if not closing_date_match:
         raise ValueError("Could not find Closing Date in the PDF text")
     if not account_number_match:
         raise ValueError("Could not find Account Number in the PDF text")
 
-    amount_matches = re.findall(r"([+-]?)\s*\$([0-9,]+\.\d{2})", summary_match.group("summary"))
+    legacy_summary_match = re.search(
+        r"Previous Balance\s+Payments/Credits\s+New Charges\s+Fees\s+Interest Charged\s+(?P<summary>.*?)(?:Closing Date:|Account Ending:|$)",
+        normalized_text
+    )
+    new_summary_match = re.search(
+        r"Account Summary\s+Previous Balance\s+Payments/Credits\s+New Charges\s+Fees\s+Interest Charged\s*(?P<summary>.*?)(?:Credit Limit|Cash Advance Limit|$)",
+        normalized_text
+    )
+
+    if legacy_summary_match:
+        summary_text = legacy_summary_match.group("summary")
+        amount_matches = re.findall(r"([+-]?)\s*\$?([0-9,]+\.\d{2})", summary_text)
+    elif new_summary_match:
+        summary_text = new_summary_match.group("summary")
+        amount_matches = re.findall(r"([+-]?)\s*\$?([0-9,]+\.\d{2})", summary_text)
+    else:
+        raise ValueError("Could not find an AMEX summary block in the PDF text")
+
     if len(amount_matches) < 5:
         raise ValueError("Could not parse the expected five AMEX summary amounts")
 
     signed_amounts = []
     current_balance = Decimal("0")
     for sign, amount_text in amount_matches[:5]:
+        normalized_sign = "-" if sign == "-" else ""
         amount_value = Decimal(amount_text.replace(",", ""))
-        if sign == "-":
+        if normalized_sign:
             amount_value = -amount_value
-        signed_amounts.append(f"{sign}${amount_text}" if sign else f"${amount_text}")
+        signed_amounts.append(f"{normalized_sign}{amount_value}")
         current_balance += amount_value
 
     return {
         "Previous Balance": signed_amounts[0],
-        "Current Balance": f"${current_balance:,.2f}",
+        "Current Balance": str(current_balance),
         "Closing Date": format_sql_date(closing_date_match.group(1)),
         "Account Number": account_number_match.group(1)
     }
@@ -126,14 +136,14 @@ def parse_statement_info(file_name):
         else:
             raise FileNotFoundError(f"Could not find PDF file: {file_name}")
 
-    if PdfFileReader is None:
-        raise ImportError("PyPDF2 is required to read PDF files")
+    if PdfReader is None:
+        raise ImportError("pypdf is required to read PDF files")
 
-    reader = PdfFileReader(path)
-    if reader.getNumPages() == 0:
+    reader = PdfReader(path)
+    if len(reader.pages) == 0:
         raise ValueError(f"PDF has no pages: {path}")
 
-    text = "\n".join(page.extractText() or "" for page in [reader.getPage(i) for i in range(reader.getNumPages())])
+    text = "\n".join(page.extract_text() or "" for page in reader.pages)
     normalized = re.sub(r"\s+", " ", text)
 
     chase_match = re.search(r"Chase", normalized)
