@@ -86,8 +86,8 @@ def _database_signatures(cursor, account_ids):
         "SELECT transDate, postDate, description, amount, memo, account, acct_id "
         f"FROM cardTransactions WHERE acct_id IN ({placeholders})",
         tuple(account_ids))
-    print(f"Placeholders: {placeholders}")
-    print(f"Database query returned {cursor.rowcount} rows for account IDs: {account_ids}")
+    #print(f"Placeholders: {placeholders}")
+    #print(f"Database query returned {cursor.rowcount} rows for account IDs: {account_ids}")
     return Counter(_signature(dict(zip(fields, row))) for row in cursor.fetchall())
 
 
@@ -170,7 +170,7 @@ def loadTransactions(database, file_path, input_fn=input):
     chaseList = ['Transaction Date', 'Post Date', 'Description', 'Category', 'Type', 'Amount', 'Memo']
     amexList = ['Date', 'Description', 'Card Member', 'Account #', 'Amount']
 
-    print(cardCsv.headers)
+    #print(cardCsv.headers)
     if cardCsv.headers == chaseList:
         return _insert_transactions(
             database, cardDictList, CardType.CHASE,
