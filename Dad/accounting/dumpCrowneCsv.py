@@ -56,7 +56,7 @@ def dumpTransactions(db):
                  "transCat.amount "
                  "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
                  "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
-                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
+                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.acct_id "
                  "= bankAccts.id WHERE (expCategories.name = 'BeAirborne' OR "
                  "expCategories.name = 'Hangar') AND YEAR(cardTransactions.transDate) = "
                  + str(yearInt))
@@ -66,7 +66,7 @@ def dumpTransactions(db):
                  "transCat.amount "
                  "FROM cardTransactions INNER JOIN transCat ON cardTransactions.id "
                  "= transCat.transId INNER JOIN expCategories ON transCat.catId = "
-                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.card_id "
+                 "expCategories.id INNER JOIN bankAccts ON cardTransactions.acct_id "
                  "= bankAccts.id WHERE (expCategories.name = 'BeRealEstate') "
                  "AND YEAR(cardTransactions.transDate) = "
                  + str(yearInt))
