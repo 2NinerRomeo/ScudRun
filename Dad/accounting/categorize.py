@@ -5,6 +5,11 @@ from os import system, name
 from time import sleep
 
 CREDFILENAME = 'creds.json'
+PAYMENT_DESCRIPTIONS = {
+    'Payment Thank You - Web',
+    'Returned Payment',
+    'ONLINE PAYMENT - THANK YOU',
+}
 
 # define our clear function
 def clear():
@@ -56,6 +61,9 @@ def assignTransactions(db):
     
     #Have user classify single-category transactions
     for row in theResults:
+        if row[2] in PAYMENT_DESCRIPTIONS:
+            currentTrans = currentTrans + 1
+            continue
         print(lastMsg)
         printLabelMenu(catDict)
         print('\ntransaction ' + str(currentTrans) + '/' + str(transCount))
