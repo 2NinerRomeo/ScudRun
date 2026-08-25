@@ -32,7 +32,7 @@ def printTransactionInfo(trans):
     print("Description: " + trans[3])
     print("Amount:      " + str(trans[4]))
     print("Date:        " + str(trans[1]))
-    print(trans) #Debug
+    #print(trans) #Debug
 
 def repeatedTransactions(cursor):
     query = ("SELECT cardTransactions.description, cardTransactions.amount, "
