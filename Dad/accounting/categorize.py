@@ -28,10 +28,11 @@ def printLabelMenu(labelDict):
 
 def printTransactionInfo(trans):
     print("Transaction# " + str(trans[0]))
-    print("Vendor:      " + trans[2])
-    print("Amount:      " + str(trans[3]))
+    print("Account:     " + trans[2])
+    print("Description: " + trans[3])
+    print("Amount:      " + str(trans[4]))
     print("Date:        " + str(trans[1]))
-    #print(trans) #Debug
+    print(trans) #Debug
 
 def repeatedTransactions(cursor):
     query = ("SELECT cardTransactions.description, cardTransactions.amount, "
@@ -68,8 +69,10 @@ def assignTransactions(db):
 
 
     #get the list of unmatched transactions
-    query = ("SELECT id,postDate,description,cardTransactions.amount,"
-            "transCat.amount from cardTransactions LEFT JOIN transCat"
+    query = ("SELECT cardTransactions.id,cardTransactions.postDate,bankAccts.name,cardTransactions.description,"
+            "cardTransactions.amount,transCat.amount from cardTransactions "
+            "INNER JOIN bankAccts ON cardTransactions.acct_id = bankAccts.id "
+            "LEFT JOIN transCat"
             " ON cardTransactions.id = transCat.transId WHERE "
              "transCat.amount IS NULL")
     theCursor.execute(query)
@@ -83,14 +86,14 @@ def assignTransactions(db):
     
     #Have user classify single-category transactions
     for row in theResults:
-        if row[2] in PAYMENT_DESCRIPTIONS:
+        if row[3] in PAYMENT_DESCRIPTIONS:
             currentTrans = currentTrans + 1
             continue
         print(lastMsg)
         printLabelMenu(catDict)
         print('\ntransaction ' + str(currentTrans) + '/' + str(transCount))
         printTransactionInfo(row)
-        suggestion = repeated.get((row[2], row[3]))
+        suggestion = repeated.get((row[3], row[4]))
         if suggestion is not None:
             print('Suggested category: ' + catDict[suggestion] + ' (y)')
         choice = input('Enter Category:')
@@ -109,11 +112,11 @@ def assignTransactions(db):
             while(not int(choice) in catDict):
                 choice = input(choice +' was not one of your choices, try again ')
 
-        lastMsg = ('transaction# ' + str(row[0]) + " " + str(row[3]) +
+            lastMsg = ('transaction# ' + str(row[0]) + " " + str(row[4]) +
                    ' categorized as ' + catDict[int(choice)])
         query = ("INSERT INTO transCat (transId, catId, amount) VALUES"
                  " (%s, %s, %s)")
-        vals = (row[0],choice,row[3])
+        vals = (row[0],choice,row[4])
         theCursor.execute(query,vals)
         db.db.commit()
 
