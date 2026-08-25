@@ -33,6 +33,27 @@ def printTransactionInfo(trans):
     print("Date:        " + str(trans[1]))
     #print(trans) #Debug
 
+def repeatedTransactions(cursor):
+    query = ("SELECT cardTransactions.description, cardTransactions.amount, "
+             "transCat.catId, COUNT(*) FROM cardTransactions INNER JOIN transCat "
+             "ON cardTransactions.id = transCat.transId "
+             "GROUP BY cardTransactions.description, cardTransactions.amount, "
+             "transCat.catId HAVING COUNT(*) > 1")
+    cursor.execute(query)
+
+    repeated = {}
+    ambiguous = set()
+    for description, amount, catId, count in cursor.fetchall():
+        key = (description, amount)
+        if key in repeated and repeated[key] != catId:
+            ambiguous.add(key)
+        else:
+            repeated[key] = catId
+
+    for key in ambiguous:
+        del repeated[key]
+    return repeated
+
 def assignTransactions(db):
     theCursor = db.db.cursor()
 
@@ -53,6 +74,7 @@ def assignTransactions(db):
              "transCat.amount IS NULL")
     theCursor.execute(query)
     theResults = theCursor.fetchall()
+    repeated = repeatedTransactions(theCursor)
 
     #how many reusults
     transCount = len(theResults)
@@ -68,6 +90,9 @@ def assignTransactions(db):
         printLabelMenu(catDict)
         print('\ntransaction ' + str(currentTrans) + '/' + str(transCount))
         printTransactionInfo(row)
+        suggestion = repeated.get((row[2], row[3]))
+        if suggestion is not None:
+            print('Suggested category: ' + catDict[suggestion] + ' (y)')
         choice = input('Enter Category:')
         if choice == 'q':
             db.db.commit()
@@ -75,18 +100,22 @@ def assignTransactions(db):
         elif choice == 's':
             print('skipping')
             continue
+        elif choice.lower() == 'y' and suggestion is not None:
+            choice = suggestion
         elif choice == '':
             print('try again')
+            continue
         else:
             while(not int(choice) in catDict):
                 choice = input(choice +' was not one of your choices, try again ')
-            lastMsg = ('transaction# ' + str(row[0]) + " " + str(row[3]) +
-                       ' categorized as ' + catDict[int(choice)])
-            query = ("INSERT INTO transCat (transId, catId, amount) VALUES"
-                     " (%s, %s, %s)")
-            vals = (row[0],choice,row[3])
-            theCursor.execute(query,vals)
-            db.db.commit()
+
+        lastMsg = ('transaction# ' + str(row[0]) + " " + str(row[3]) +
+                   ' categorized as ' + catDict[int(choice)])
+        query = ("INSERT INTO transCat (transId, catId, amount) VALUES"
+                 " (%s, %s, %s)")
+        vals = (row[0],choice,row[3])
+        theCursor.execute(query,vals)
+        db.db.commit()
 
         sleep(0.5)
         currentTrans = currentTrans + 1 
