@@ -7,8 +7,10 @@ from time import sleep
 CREDFILENAME = 'creds.json'
 PAYMENT_DESCRIPTIONS = {
     'Payment Thank You - Web',
+    'Payment Thank You-Mobile',
     'Returned Payment',
     'ONLINE PAYMENT - THANK YOU',
+    'MOBILE PAYMENT - THANK YOU'
 }
 
 # define our clear function
